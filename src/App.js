@@ -17,13 +17,13 @@ function App() {
   let [cards, setCards] = useState([]);
 
   function buildDeck() {
-    let deck = []
+    let deck = [];
     for (let suit of SUITS) {
       for (let value of VALUES) {
         deck.push(new Card(suit, value));
       }
     }
-    setCards(deck)
+    setCards(deck);
   }
 
   useEffect(() => {
@@ -33,7 +33,32 @@ function App() {
   return (
     <div>
       <h1>Hello World!</h1>
-      {cards.map((card) => (<div>{card.value}</div>))}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "row",
+          flexWrap: "wrap",
+        }}
+      >
+        {cards.map((card) => (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              backgroundColor: "salmon",
+              padding: "15px",
+              margin: "10px",
+              width: "80px",
+              height: "120px",
+            }}
+          >
+            <div>{card.suit}</div>
+            <div>{card.value}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
