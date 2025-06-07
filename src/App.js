@@ -17,7 +17,7 @@ class Card {
 
 function App() {
   let [cards, setCards] = useState([]);
-  let [selected, setSelected] = useState({suit: null, rank: null})
+  let [selected, setSelected] = useState({suit: 'draw', rank: 'card'})
 
   function buildDeck() {
     let deck = [];
@@ -27,12 +27,11 @@ function App() {
       }
     }
     setCards(deck);
-    setSelected(deck[0])
+    
   }
 
   function shuffleDeck() {
     let deck = [...cards]
-    
     for (let i = cards.length - 1 ; i > 0 ; i--){
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]]
@@ -41,10 +40,12 @@ function App() {
   }
 
   function drawCard() {
-    let deck = cards;
-    console.log(deck)
-    if (deck.length){
-      setSelected(deck.pop())
+    
+    if (cards.length){
+      const deckCopy = [...cards];
+      const drawnCard = deckCopy.pop();
+      setCards(deckCopy);
+      setSelected(drawnCard)
     } else {
       setSelected({suit: 'shuffle', rank: 'again'})
     }
@@ -71,7 +72,7 @@ function App() {
       >
 
         {/* dev note: this displays entire card deck */}
-{/*         
+        
         {cards.map((card) => (
           <div
             style={{
@@ -89,7 +90,7 @@ function App() {
             <div>{card.suit}</div>
             <div>{card.rank}</div>
           </div>
-        ))} */}
+        ))}
 
 
         
@@ -101,8 +102,8 @@ function App() {
               backgroundColor: "salmon",
               padding: "15px",
               margin: "10px",
-              width: "80px",
-              height: "120px",
+              width: "100px",
+              height: "140px",
               borderRadius: "8px",
             }}
           >
