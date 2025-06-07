@@ -15,6 +15,7 @@ class Card {
 
 function App() {
   let [cards, setCards] = useState([]);
+  //let [selected, setSelected] = useState()
 
   function buildDeck() {
     let deck = [];
@@ -26,13 +27,24 @@ function App() {
     setCards(deck);
   }
 
+  function shuffleDeck() {
+    let deck = [...cards]
+    
+    for (let i = cards.length - 1 ; i > 0 ; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]]
+    }
+    console.log(deck)
+    setCards(deck)
+  }
+
   useEffect(() => {
     buildDeck();
   }, []);
 
   return (
     <div>
-      <h1>Hello World!</h1>
+      <h1 style={{display: "flex", justifyContent: "center"}}>Hello World!</h1>
       <div
         style={{
           display: "flex",
@@ -52,6 +64,7 @@ function App() {
               margin: "10px",
               width: "80px",
               height: "120px",
+              borderRadius: "8px",
             }}
           >
             <div>{card.suit}</div>
@@ -59,6 +72,9 @@ function App() {
           </div>
         ))}
       </div>
+      <button onClick = {shuffleDeck}>
+        Shuffle
+      </button>
     </div>
   );
 }
