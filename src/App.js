@@ -17,7 +17,10 @@ class Card {
 
 function App() {
   let [cards, setCards] = useState([]);
-  let [selected, setSelected] = useState({suit: 'draw', rank: 'card'})
+  let [playerOneDeck, setPlayerOneDeck] = useState([]);
+  let [playerTwoDeck, setPlayerTwoDeck] = useState([]);
+  let [selected1, setSelected1] = useState({ suit: "draw", rank: "card" });
+  let [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
 
   function buildDeck() {
     let deck = [];
@@ -27,29 +30,54 @@ function App() {
       }
     }
     setCards(deck);
-    
   }
 
   function shuffleDeck() {
-    let deck = [...cards]
-    for (let i = cards.length - 1 ; i > 0 ; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]]
+    if (!cards.length) {
+      buildDeck();
+    } else {
+      let deck = [...cards];
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      setCards(deck);
     }
-    setCards(deck)
+  }
+
+  function splitDeck() {
+    const deckCopy = [...cards];
+    const p1 = [];
+    const p2 = [];
+ 
+    while (deckCopy.length){
+      const card1 = deckCopy.pop()
+      const card2 = deckCopy.pop()
+      if (card1) {p1.push(card1)}
+      if (card2) {p2.push(card2)}
+    }
+    setPlayerOneDeck(p1);
+    setPlayerTwoDeck(p2);
+    console.log(playerOneDeck, playerTwoDeck)
   }
 
   function drawCard() {
-    
-    if (cards.length){
-      const deckCopy = [...cards];
-      const drawnCard = deckCopy.pop();
-      setCards(deckCopy);
-      setSelected(drawnCard)
+    if (playerOneDeck.length && playerTwoDeck.length) {
+      const deckCopy1 = [...playerOneDeck];
+      const deckCopy2 = [...playerTwoDeck];
+
+      const drawnCard1 = deckCopy1.pop();
+      const drawnCard2 = deckCopy2.pop();
+      
+      setPlayerOneDeck(deckCopy1);
+      setPlayerTwoDeck(deckCopy2);
+
+      setSelected1(drawnCard1);
+      setSelected2(drawnCard2);
     } else {
-      setSelected({suit: 'shuffle', rank: 'again'})
+      setSelected1({ suit: "shuffle", rank: "again" });
+      setSelected2({ suit: "shuffle", rank: "again" })
     }
-    
   }
 
   useEffect(() => {
@@ -58,10 +86,9 @@ function App() {
 
   return (
     <div>
-      <h1 style={{display: "flex", justifyContent: "center"}}>Hello World!</h1>
-      
-      
-      
+      <h1 style={{ display: "flex", justifyContent: "center" }}>
+        Hello World!
+      </h1>
       <div
         style={{
           display: "flex",
@@ -70,9 +97,8 @@ function App() {
           flexWrap: "wrap",
         }}
       >
-
         {/* dev note: this displays entire card deck */}
-        
+
         {cards.map((card) => (
           <div
             style={{
@@ -91,33 +117,46 @@ function App() {
             <div>{card.rank}</div>
           </div>
         ))}
-
-
-        
-        <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-              backgroundColor: "salmon",
-              padding: "15px",
-              margin: "10px",
-              width: "100px",
-              height: "140px",
-              borderRadius: "8px",
-            }}
-          >
-            <div>{selected.suit}</div>
-            <div>{selected.rank}</div>
-        </div>
-       
       </div>
-      <button onClick = {shuffleDeck}>
-        Shuffle
-      </button>
-      <button onClick = {drawCard}>
-        Draw
-      </button>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          backgroundColor: "salmon",
+          padding: "15px",
+          margin: "10px",
+          width: "100px",
+          height: "140px",
+          borderRadius: "8px",
+        }}
+      >
+        <h3>Player 1</h3>
+        <div>{selected1.suit}</div>
+        <div>{selected1.rank}</div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          backgroundColor: "salmon",
+          padding: "15px",
+          margin: "10px",
+          width: "100px",
+          height: "140px",
+          borderRadius: "8px",
+        }}
+      >
+        <h3>Player 2</h3>
+        <div>{selected2.suit}</div>
+        <div>{selected2.rank}</div>
+      </div>
+
+      <button onClick={shuffleDeck}>Shuffle</button>
+      <button onClick={drawCard}>Draw</button>
+      <button onClick={splitDeck}>split deck</button>
     </div>
   );
 }
