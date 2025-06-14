@@ -16,7 +16,7 @@ function App() {
   let [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
   let [playerOneScore, setPlayerOneScore] = useState(0);
   let [playerTwoScore, setPlayerTwoScore] = useState(0);
-  let [message, setMessage] = useState('...waiting for card draw')
+  let [message, setMessage] = useState("...waiting for card draw");
 
   function buildDeck() {
     let deck = [];
@@ -85,38 +85,39 @@ function App() {
   }, []);
 
   useEffect(() => {
-
     const value1 = RANK_VALUES[selected1.rank];
     const value2 = RANK_VALUES[selected2.rank];
 
-    if (value1 > value2){
-      setPlayerOneScore(prev => prev + 1)
-      setMessage('Player 1 Wins')
-    } else if (value1 < value2){
-      setPlayerTwoScore(prev => prev + 1)
-      setMessage('Player 2 Wins')
+    if (value1 > value2) {
+      setPlayerOneScore((prev) => prev + 1);
+      setMessage("Player 1 Wins");
+    } else if (value1 < value2) {
+      setPlayerTwoScore((prev) => prev + 1);
+      setMessage("Player 2 Wins");
+    } else if (selected1.suit === "draw" && selected2.suit === "draw") {
+      setMessage("...waiting for card draw");
     } else {
-      setMessage('War!!!')
+      setMessage("War!!!");
     }
-  }, [selected1, selected2])
+  }, [selected1, selected2]);
 
   return (
     <div>
       <h1 style={{ display: "flex", justifyContent: "center" }}>
         Hello World!
       </h1>
-      <h2 style={{display: "flex", justifyContent: 'center'}}>{message}</h2>
+      <h2 style={{ display: "flex", justifyContent: "center" }}>{message}</h2>
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           flexDirection: "row",
           flexWrap: "wrap",
-          padding: '10px'
+          padding: "10px",
         }}
       >
-        <h3 style={{margin: '10px'}}>Player One Score: {playerOneScore}</h3>
-        <h3 style={{margin: '10px'}}>Player Two Score: {playerTwoScore}</h3>
+        <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
+        <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
       </div>
       <div
         style={{
