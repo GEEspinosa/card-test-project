@@ -11,8 +11,16 @@ class Card {
 function App() {
   let [start, setStart] = useState(false);
   let [cards, setCards] = useState([]);
-  let [playerOneDeck, setPlayerOneDeck] = useState([]);
-  let [playerTwoDeck, setPlayerTwoDeck] = useState([]);
+  let [playerOne, setPlayerOne] = useState({
+    deck: [],
+    reserve: [],
+    warPile: [],
+  });
+  let [playerTwo, setPlayerTwo] = useState({
+    deck: [],
+    reserve: [],
+    warPile: [],
+  });
   let [selected1, setSelected1] = useState({ suit: "draw", rank: "card" });
   let [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
   let [playerOneScore, setPlayerOneScore] = useState(0);
@@ -61,21 +69,33 @@ function App() {
     deck = shuffleDeck(deck);
     setCards(deck);
     const { p1, p2 } = splitDeck(deck);
-    setPlayerOneDeck(p1);
-    setPlayerTwoDeck(p2);
+    setPlayerOne(prev => ({
+      ...prev,
+      deck: p1,
+    }));
+    setPlayerTwo(prev => ({
+      ...prev,
+      deck: p2
+    }));
     setStart(true);
   }
 
   function drawCard() {
-    if (playerOneDeck.length && playerTwoDeck.length) {
-      const deckCopy1 = [...playerOneDeck];
-      const deckCopy2 = [...playerTwoDeck];
+    if (playerOne.deck.length && playerTwo.deck.length) {
+      const deckCopy1 = [...playerOne.deck];
+      const deckCopy2 = [...playerTwo.deck];
 
       const drawnCard1 = deckCopy1.pop();
       const drawnCard2 = deckCopy2.pop();
 
-      setPlayerOneDeck(deckCopy1);
-      setPlayerTwoDeck(deckCopy2);
+      setPlayerOne(prev => ({
+        ...prev,
+        deck: deckCopy1,
+      }));
+      setPlayerTwo(prev  => ({
+        ...prev,
+        deck: deckCopy2,
+      }));
 
       setSelected1(drawnCard1);
       setSelected2(drawnCard2);
