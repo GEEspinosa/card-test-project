@@ -9,6 +9,7 @@ class Card {
 }
 
 function App() {
+  let [start, setStart] = useState(false);
   let [cards, setCards] = useState([]);
   let [playerOneDeck, setPlayerOneDeck] = useState([]);
   let [playerTwoDeck, setPlayerTwoDeck] = useState([]);
@@ -25,24 +26,20 @@ function App() {
         deck.push(new Card(suit, rank));
       }
     }
-    setCards(deck);
+    return deck;
   }
 
-  function shuffleDeck() {
-    if (!cards.length) {
-      buildDeck();
-    } else {
-      let deck = [...cards];
-      for (let i = cards.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-      }
-      setCards(deck);
+  function shuffleDeck(deck) {
+    let newDeck = [...deck];
+    for (let i = newDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
     }
+    return newDeck;
   }
 
-  function splitDeck() {
-    const deckCopy = [...cards];
+  function splitDeck(deckToSplit) {
+    const deckCopy = [...deckToSplit];
     const p1 = [];
     const p2 = [];
 
@@ -56,9 +53,17 @@ function App() {
         p2.push(card2);
       }
     }
+    return { p1, p2 };
+  }
+
+  function startGame() {
+    let deck = buildDeck();
+    deck = shuffleDeck(deck);
+    setCards(deck);
+    const { p1, p2 } = splitDeck(deck);
     setPlayerOneDeck(p1);
     setPlayerTwoDeck(p2);
-    console.log(playerOneDeck, playerTwoDeck);
+    setStart(true);
   }
 
   function drawCard() {
@@ -81,10 +86,6 @@ function App() {
   }
 
   useEffect(() => {
-    buildDeck();
-  }, []);
-
-  useEffect(() => {
     const value1 = RANK_VALUES[selected1.rank];
     const value2 = RANK_VALUES[selected2.rank];
 
@@ -104,7 +105,7 @@ function App() {
   return (
     <div>
       <h1 style={{ display: "flex", justifyContent: "center" }}>
-        Hello World!
+        Attrition: The Super War Card Game!
       </h1>
       <h2 style={{ display: "flex", justifyContent: "center" }}>{message}</h2>
       <div
@@ -127,27 +128,6 @@ function App() {
           flexWrap: "wrap",
         }}
       >
-        {/* dev note: this displays entire card deck */}
-
-        {/* {cards.map((card) => (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-              backgroundColor: "salmon",
-              padding: "15px",
-              margin: "10px",
-              width: "80px",
-              height: "120px",
-              borderRadius: "8px",
-            }}
-          >
-            <div>{card.suit}</div>
-            <div>{card.rank}</div>
-          </div>
-        ))} */}
-
         <div
           style={{
             display: "flex",
@@ -192,9 +172,8 @@ function App() {
           flexWrap: "wrap",
         }}
       >
-        <button onClick={shuffleDeck}>Shuffle</button>
+        {!start && <button onClick={startGame}>Start Game</button>}
         <button onClick={drawCard}>Draw</button>
-        <button onClick={splitDeck}>split deck</button>
       </div>
     </div>
   );
