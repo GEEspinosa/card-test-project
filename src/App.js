@@ -69,13 +69,13 @@ function App() {
     deck = shuffleDeck(deck);
     setCards(deck);
     const { p1, p2 } = splitDeck(deck);
-    setPlayerOne(prev => ({
+    setPlayerOne((prev) => ({
       ...prev,
       deck: p1,
     }));
-    setPlayerTwo(prev => ({
+    setPlayerTwo((prev) => ({
       ...prev,
-      deck: p2
+      deck: p2,
     }));
     setStart(true);
   }
@@ -88,11 +88,11 @@ function App() {
       const drawnCard1 = deckCopy1.pop();
       const drawnCard2 = deckCopy2.pop();
 
-      setPlayerOne(prev => ({
+      setPlayerOne((prev) => ({
         ...prev,
         deck: deckCopy1,
       }));
-      setPlayerTwo(prev  => ({
+      setPlayerTwo((prev) => ({
         ...prev,
         deck: deckCopy2,
       }));
@@ -105,21 +105,53 @@ function App() {
     }
   }
 
-  useEffect(() => {
+  function getWinner(card1, card2) {
     const value1 = RANK_VALUES[selected1.rank];
     const value2 = RANK_VALUES[selected2.rank];
-
     if (value1 > value2) {
-      setPlayerOneScore((prev) => prev + 1);
-      setMessage("Player 1 Wins");
-    } else if (value1 < value2) {
-      setPlayerTwoScore((prev) => prev + 1);
-      setMessage("Player 2 Wins");
-    } else if (selected1.suit === "draw" && selected2.suit === "draw") {
-      setMessage("...waiting for card draw");
-    } else {
-      setMessage("War!!!");
+      return "playerOne";
     }
+    if (value1 < value2) {
+      return "playerTwo";
+    }
+    return "WAR!";
+  }
+
+  function awardToPlayerOne() {
+    setPlayerOneScore((prev) => prev + 1);
+    setPlayerOne((prev) => ({
+      ...prev,
+      reserve: [...playerOne.reserve, selected1, selected2],
+    }));
+    setMessage("Player 1 Wins");
+  }
+
+  function awardToPlayerTwo() {
+    setPlayerTwoScore((prev) => prev + 1);
+    setPlayerTwo((prev) => ({
+      ...prev,
+      reserve: [...playerTwo.reserve, selected1, selected2],
+    }));
+    setMessage("Player 2 Wins");
+  }
+
+  function war() {
+    setMessage("War!!!");
+  }
+
+  function handleCardComparison() {
+    let result = getWinner();
+    if (result === "playerOne") {
+      awardToPlayerOne();
+    } else if (result === "playerTwo") {
+      awardToPlayerTwo();
+    } else {
+      war();
+    }
+  }
+
+  useEffect(() => {
+    handleCardComparison();
   }, [selected1, selected2]);
 
   return (
