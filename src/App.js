@@ -106,8 +106,8 @@ function App() {
   }
 
   function getWinner(card1, card2) {
-    const value1 = RANK_VALUES[selected1.rank];
-    const value2 = RANK_VALUES[selected2.rank];
+    const value1 = RANK_VALUES[card1.rank];
+    const value2 = RANK_VALUES[card2.rank];
     if (value1 > value2) {
       return "playerOne";
     }
@@ -121,7 +121,7 @@ function App() {
     setPlayerOneScore((prev) => prev + 1);
     setPlayerOne((prev) => ({
       ...prev,
-      reserve: [...playerOne.reserve, selected1, selected2],
+      reserve: [...prev.reserve, selected1, selected2],
     }));
     setMessage("Player 1 Wins");
   }
@@ -130,7 +130,7 @@ function App() {
     setPlayerTwoScore((prev) => prev + 1);
     setPlayerTwo((prev) => ({
       ...prev,
-      reserve: [...playerTwo.reserve, selected1, selected2],
+      reserve: [...prev.reserve, selected1, selected2],
     }));
     setMessage("Player 2 Wins");
   }
@@ -140,7 +140,7 @@ function App() {
   }
 
   function handleCardComparison() {
-    let result = getWinner();
+    let result = getWinner(selected1, selected2);
     if (result === "playerOne") {
       awardToPlayerOne();
     } else if (result === "playerTwo") {
@@ -169,8 +169,16 @@ function App() {
           padding: "10px",
         }}
       >
-        <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
-        <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
+        <div>
+          <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
+          <h3 style={{ margin: "10px" }}>Player One Deck Count: {playerOne.deck.length}</h3>
+          <h3 style={{ margin: "10px" }}>Player One Deck Reserve: {playerOne.reserve.length}</h3>
+        </div>
+        <div>
+          <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
+          <h3 style={{ margin: "10px" }}>Player Two Deck Count: {playerTwo.deck.length}</h3>
+          <h3 style={{ margin: "10px" }}>Player Two Deck Reserve: {playerTwo.reserve.length}</h3>
+        </div>
       </div>
       <div
         style={{
