@@ -10,6 +10,7 @@ class Card {
 
 function App() {
   let [start, setStart] = useState(false);
+  let [war, setWar] = useState(false);
   let [cards, setCards] = useState([]);
   let [playerOne, setPlayerOne] = useState({
     deck: [],
@@ -117,36 +118,66 @@ function App() {
     return "WAR!";
   }
 
-  function awardToPlayerOne() {
+  function awardToPlayerOne(card1, card2) {
     setPlayerOneScore((prev) => prev + 1);
     setPlayerOne((prev) => ({
       ...prev,
-      reserve: [...prev.reserve, selected1, selected2],
+      reserve: [...prev.reserve, card1, card2],
     }));
     setMessage("Player 1 Wins");
   }
 
-  function awardToPlayerTwo() {
+  function awardToPlayerTwo(card1, card2) {
     setPlayerTwoScore((prev) => prev + 1);
     setPlayerTwo((prev) => ({
       ...prev,
-      reserve: [...prev.reserve, selected1, selected2],
+      reserve: [...prev.reserve, card1, card2],
     }));
     setMessage("Player 2 Wins");
   }
 
-  function war() {
-    setMessage("War!!!");
+  function fillWarPiles() {
+    let deckPlayer1 = [...playerOne.deck];
+    let deckPlayer2 = [...playerTwo.deck];
+    let warPile1 = deckPlayer1.splice(-3);
+    let warPile2 = deckPlayer2.splice(-3);
+    setPlayerOne((prev) => ({
+      ...prev,
+      deck: deckPlayer1,
+      warPile: warPile1,
+    }));
+    setPlayerTwo((prev) => ({
+      ...prev,
+      deck: deckPlayer2,
+      warPile: warPile2,
+    }));
+
+    setMessage("War piles filed! Draw Again to resolve war.");
+    setWar(false);
   }
 
   function handleCardComparison() {
+    if (
+      selected1.rank === "card" &&
+      selected1.suit === "draw" &&
+      selected2.rank === "card" &&
+      selected2.suit === "draw"
+    ) {
+      return;
+    }
+
+    if (!selected1 || !selected2) {
+      return;
+    }
+
     let result = getWinner(selected1, selected2);
     if (result === "playerOne") {
-      awardToPlayerOne();
+      awardToPlayerOne(selected1, selected2);
     } else if (result === "playerTwo") {
-      awardToPlayerTwo();
+      awardToPlayerTwo(selected1, selected2);
     } else {
-      war();
+      setWar(true);
+      setMessage("War!!!");
     }
   }
 
@@ -171,13 +202,27 @@ function App() {
       >
         <div>
           <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
-          <h3 style={{ margin: "10px" }}>Player One Deck Count: {playerOne.deck.length}</h3>
-          <h3 style={{ margin: "10px" }}>Player One Deck Reserve: {playerOne.reserve.length}</h3>
+          <h3 style={{ margin: "10px" }}>
+            Player One Deck Count: {playerOne.deck.length}
+          </h3>
+          <h3 style={{ margin: "10px" }}>
+            Player One Deck Reserve: {playerOne.reserve.length}
+          </h3>
+          <h3 style={{ margin: "10px" }}>
+            Player One Deck War Pile: {playerOne.warPile.length}
+          </h3>
         </div>
         <div>
           <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
-          <h3 style={{ margin: "10px" }}>Player Two Deck Count: {playerTwo.deck.length}</h3>
-          <h3 style={{ margin: "10px" }}>Player Two Deck Reserve: {playerTwo.reserve.length}</h3>
+          <h3 style={{ margin: "10px" }}>
+            Player Two Deck Count: {playerTwo.deck.length}
+          </h3>
+          <h3 style={{ margin: "10px" }}>
+            Player Two Deck Reserve: {playerTwo.reserve.length}
+          </h3>
+          <h3 style={{ margin: "10px" }}>
+            Player Two Deck War Pile: {playerTwo.warPile.length}
+          </h3>
         </div>
       </div>
       <div
@@ -233,6 +278,7 @@ function App() {
         }}
       >
         {!start && <button onClick={startGame}>Start Game</button>}
+        {war && <button onClick={fillWarPiles}>Fill War Piles</button>}
         <button onClick={drawCard}>Draw</button>
       </div>
     </div>
