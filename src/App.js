@@ -118,43 +118,6 @@ function App() {
     return "WAR!";
   }
 
-  // function awardWarPiles (winnerSetter, loserSetter) {
-  // if (playerOne.warPile.length > 0 && playerTwo.warPile.length > 0) {
-  //     let warPileCopy1 = [...playerOne.warPile];
-  //     let warPileCopy2 = [...playerTwo.warPile];
-  //     winnerSetter((prev) => ({
-  //       ...prev,
-  //       reserve: [...prev.reserve, ...warPileCopy1, ...warPileCopy2],
-  //       warPile: [],
-  //     }));
-  //     loserSetter((prev) => ({
-  //       ...prev,
-  //       warPile: [],
-  //     }));
-  //   }
-  // }
-
-  // function awardToPlayerOne(card1, card2) {
-  //   setPlayerOneScore((prev) => prev + 1);
-  //   setPlayerOne((prev) => ({
-  //     ...prev,
-  //     reserve: [...prev.reserve, card1, card2],
-  //   }));
-  //   awardWarPiles(setPlayerOne, setPlayerTwo)
-  //   setMessage("Player 1 Wins");
-  // }
-
-  // function awardToPlayerTwo(card1, card2) {
-  //   setPlayerTwoScore((prev) => prev + 1);
-  //   setPlayerTwo((prev) => ({
-  //     ...prev,
-  //     reserve: [...prev.reserve, card1, card2],
-  //     warPile: [],
-  //   }));
-  //   awardWarPiles(setPlayerTwo, setPlayerOne)
-  //   setMessage("Player 2 Wins");
-  // }
-
   function awardToPlayerOne(card1, card2) {
     setPlayerOneScore((prev) => prev + 1);
 
@@ -195,8 +158,8 @@ function App() {
   function fillWarPiles() {
     let deckPlayer1 = [...playerOne.deck];
     let deckPlayer2 = [...playerTwo.deck];
-    let warPile1 = deckPlayer1.splice(deckPlayer1.length -3, 3);
-    let warPile2 = deckPlayer2.splice(deckPlayer2.length -3, 3);
+    let warPile1 = deckPlayer1.splice(deckPlayer1.length - 3, 3);
+    let warPile2 = deckPlayer2.splice(deckPlayer2.length - 3, 3);
     setPlayerOne((prev) => ({
       ...prev,
       deck: deckPlayer1,
@@ -210,6 +173,26 @@ function App() {
 
     setMessage("War piles filled! Draw Again to resolve war.");
     setWar(false);
+  }
+
+  function freshDeck(playerKey) {
+    
+    if (playerKey === "playerOne") {
+      let copyReserve = shuffleDeck(playerOne.reserve);
+
+      setPlayerOne((prev) => ({
+        ...prev,
+        deck: copyReserve,
+        reserve: [],
+      }));
+    } else {
+      let copyReserve = shuffleDeck(playerTwo.reserve);
+      setPlayerTwo((prev) => ({
+        ...prev,
+        deck: copyReserve,
+        reserve: [],
+      }));
+    }
   }
 
   function handleCardComparison() {
@@ -294,17 +277,34 @@ function App() {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
-            backgroundColor: "salmon",
-            padding: "15px",
-            margin: "10px",
-            width: "100px",
-            height: "140px",
-            borderRadius: "8px",
+            border: "solid black",
           }}
         >
-          <h3>Player 1</h3>
-          <div>{selected1.suit}</div>
-          <div>{selected1.rank}</div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              backgroundColor: "salmon",
+              padding: "15px",
+              margin: "10px",
+              width: "100px",
+              height: "140px",
+              borderRadius: "8px",
+            }}
+          >
+            <h3>Player 1</h3>
+            <div>{selected1.suit}</div>
+            <div>{selected1.rank}</div>
+          </div>
+          {playerOne.deck.length === 0 && (
+            <button
+              onClick={() => freshDeck("playerOne")}
+              style={{ margin: "10px" }}
+            >
+              Fresh Deck
+            </button>
+          )}
         </div>
 
         <div
@@ -312,17 +312,34 @@ function App() {
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
-            backgroundColor: "salmon",
-            padding: "15px",
-            margin: "10px",
-            width: "100px",
-            height: "140px",
-            borderRadius: "8px",
+            border: "solid black",
           }}
         >
-          <h3>Player 2</h3>
-          <div>{selected2.suit}</div>
-          <div>{selected2.rank}</div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              backgroundColor: "salmon",
+              padding: "15px",
+              margin: "10px",
+              width: "100px",
+              height: "140px",
+              borderRadius: "8px",
+            }}
+          >
+            <h3>Player 2</h3>
+            <div>{selected2.suit}</div>
+            <div>{selected2.rank}</div>
+          </div>
+          {playerTwo.deck.length === 0 && (
+            <button
+              onClick={() => freshDeck("playerTwo")}
+              style={{ margin: "10px" }}
+            >
+              Fresh Deck
+            </button>
+          )}
         </div>
       </div>
       <div
