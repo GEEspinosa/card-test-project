@@ -175,24 +175,19 @@ function App() {
     setWar(false);
   }
 
-  function freshDeck(playerKey) {
-    
-    if (playerKey === "playerOne") {
-      let copyReserve = shuffleDeck(playerOne.reserve);
+  function refreshDeck(playerKey) {
+    let copyReserve =
+      playerKey === "playerOne"
+        ? shuffleDeck(playerOne.reserve)
+        : shuffleDeck(playerTwo.reserve);
 
-      setPlayerOne((prev) => ({
-        ...prev,
-        deck: copyReserve,
-        reserve: [],
-      }));
-    } else {
-      let copyReserve = shuffleDeck(playerTwo.reserve);
-      setPlayerTwo((prev) => ({
-        ...prev,
-        deck: copyReserve,
-        reserve: [],
-      }));
-    }
+    let setter = playerKey === "playerOne" ? setPlayerOne : setPlayerTwo;
+
+    setter((prev) => ({
+      ...prev,
+      deck: copyReserve,
+      reserve: [],
+    }));
   }
 
   function handleCardComparison() {
@@ -299,7 +294,7 @@ function App() {
           </div>
           {playerOne.deck.length === 0 && (
             <button
-              onClick={() => freshDeck("playerOne")}
+              onClick={() => refreshDeck("playerOne")}
               style={{ margin: "10px" }}
             >
               Fresh Deck
@@ -334,7 +329,7 @@ function App() {
           </div>
           {playerTwo.deck.length === 0 && (
             <button
-              onClick={() => freshDeck("playerTwo")}
+              onClick={() => refreshDeck("playerTwo")}
               style={{ margin: "10px" }}
             >
               Fresh Deck
