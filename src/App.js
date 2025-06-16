@@ -118,20 +118,76 @@ function App() {
     return "WAR!";
   }
 
+  // function awardWarPiles (winnerSetter, loserSetter) {
+  // if (playerOne.warPile.length > 0 && playerTwo.warPile.length > 0) {
+  //     let warPileCopy1 = [...playerOne.warPile];
+  //     let warPileCopy2 = [...playerTwo.warPile];
+  //     winnerSetter((prev) => ({
+  //       ...prev,
+  //       reserve: [...prev.reserve, ...warPileCopy1, ...warPileCopy2],
+  //       warPile: [],
+  //     }));
+  //     loserSetter((prev) => ({
+  //       ...prev,
+  //       warPile: [],
+  //     }));
+  //   }
+  // }
+
+  // function awardToPlayerOne(card1, card2) {
+  //   setPlayerOneScore((prev) => prev + 1);
+  //   setPlayerOne((prev) => ({
+  //     ...prev,
+  //     reserve: [...prev.reserve, card1, card2],
+  //   }));
+  //   awardWarPiles(setPlayerOne, setPlayerTwo)
+  //   setMessage("Player 1 Wins");
+  // }
+
+  // function awardToPlayerTwo(card1, card2) {
+  //   setPlayerTwoScore((prev) => prev + 1);
+  //   setPlayerTwo((prev) => ({
+  //     ...prev,
+  //     reserve: [...prev.reserve, card1, card2],
+  //     warPile: [],
+  //   }));
+  //   awardWarPiles(setPlayerTwo, setPlayerOne)
+  //   setMessage("Player 2 Wins");
+  // }
+
   function awardToPlayerOne(card1, card2) {
     setPlayerOneScore((prev) => prev + 1);
+
+    const warPile1 = playerOne.warPile;
+    const warPile2 = playerTwo.warPile;
+
     setPlayerOne((prev) => ({
       ...prev,
-      reserve: [...prev.reserve, card1, card2],
+      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
+      warPile: [],
     }));
+    setPlayerTwo((prev) => ({
+      ...prev,
+      warPile: [],
+    }));
+
     setMessage("Player 1 Wins");
   }
 
   function awardToPlayerTwo(card1, card2) {
     setPlayerTwoScore((prev) => prev + 1);
+
+    const warPile1 = playerOne.warPile;
+    const warPile2 = playerTwo.warPile;
+
     setPlayerTwo((prev) => ({
       ...prev,
-      reserve: [...prev.reserve, card1, card2],
+      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
+      warPile: [],
+    }));
+    setPlayerOne((prev) => ({
+      ...prev,
+      warPile: [],
     }));
     setMessage("Player 2 Wins");
   }
@@ -139,8 +195,8 @@ function App() {
   function fillWarPiles() {
     let deckPlayer1 = [...playerOne.deck];
     let deckPlayer2 = [...playerTwo.deck];
-    let warPile1 = deckPlayer1.splice(-3);
-    let warPile2 = deckPlayer2.splice(-3);
+    let warPile1 = deckPlayer1.splice(deckPlayer1.length -3, 3);
+    let warPile2 = deckPlayer2.splice(deckPlayer2.length -3, 3);
     setPlayerOne((prev) => ({
       ...prev,
       deck: deckPlayer1,
@@ -152,7 +208,7 @@ function App() {
       warPile: warPile2,
     }));
 
-    setMessage("War piles filed! Draw Again to resolve war.");
+    setMessage("War piles filled! Draw Again to resolve war.");
     setWar(false);
   }
 
