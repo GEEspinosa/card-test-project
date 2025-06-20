@@ -158,8 +158,11 @@ function App() {
   function fillWarPiles() {
     let deckPlayer1 = [...playerOne.deck];
     let deckPlayer2 = [...playerTwo.deck];
-    let warPile1 = deckPlayer1.splice(deckPlayer1.length - 3, 3);
-    let warPile2 = deckPlayer2.splice(deckPlayer2.length - 3, 3);
+    let additional1 = deckPlayer1.splice(deckPlayer1.length - 3, 3);
+    let additional2 = deckPlayer2.splice(deckPlayer2.length - 3, 3);
+
+    let warPile1 = [selected1, ...additional1];
+    let warPile2 = [selected2, ...additional2];
     setPlayerOne((prev) => ({
       ...prev,
       deck: deckPlayer1,
