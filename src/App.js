@@ -134,6 +134,12 @@ function App() {
       warPile: [],
     }));
 
+    if (war){
+      setSelected1({ suit: "draw", rank: "card" })
+    setSelected2({ suit: "draw", rank: "card" })
+    setWar(false)
+    }
+    
     setMessage("Player 1 Wins");
   }
 
@@ -152,30 +158,36 @@ function App() {
       ...prev,
       warPile: [],
     }));
+
+    if (war){
+      setSelected1({ suit: "draw", rank: "card" })
+    setSelected2({ suit: "draw", rank: "card" })
+    setWar(false)
+    }
     setMessage("Player 2 Wins");
   }
 
   function fillWarPiles() {
     let deckPlayer1 = [...playerOne.deck];
     let deckPlayer2 = [...playerTwo.deck];
-    let additional1 = deckPlayer1.splice(deckPlayer1.length - 3, 3);
-    let additional2 = deckPlayer2.splice(deckPlayer2.length - 3, 3);
+    let warPile1 = deckPlayer1.splice(deckPlayer1.length - 3, 3);
+    let warPile2 = deckPlayer2.splice(deckPlayer2.length - 3, 3);
 
-    let warPile1 = [selected1, ...additional1];
-    let warPile2 = [selected2, ...additional2];
+    // let warPile1 = [selected1, ...additional1];
+    // let warPile2 = [selected2, ...additional2];
     setPlayerOne((prev) => ({
       ...prev,
       deck: deckPlayer1,
-      warPile: warPile1,
+      warPile: [...prev.warPile, ...warPile1],
     }));
     setPlayerTwo((prev) => ({
       ...prev,
       deck: deckPlayer2,
-      warPile: warPile2,
+      warPile: [...prev.warPile, ...warPile2],
     }));
 
     setMessage("War piles filled! Draw Again to resolve war.");
-    setWar(false);
+    
   }
 
   function refreshDeck(playerKey) {
@@ -215,6 +227,16 @@ function App() {
     } else {
       setWar(true);
       setMessage("War!!!");
+
+      setPlayerOne((prev) => ({
+      ...prev,
+      warPile: [...prev.warPile, selected1],
+    }));
+    setPlayerTwo((prev) => ({
+      ...prev,
+      warPile: [...prev.warPile, selected2],
+    }));
+
     }
   }
 
