@@ -8,9 +8,16 @@ class Card {
   }
 }
 
+const WAR_STATES = {
+  NONE: "none",
+  PENDING: "pending",
+  FILLED: "filled",
+  RESOLVED: "resolved",
+};
+
 function App() {
   let [start, setStart] = useState(false);
-  let [war, setWar] = useState(false);
+  let [war, setWar] = useState(WAR_STATES.NONE);
   let [cards, setCards] = useState([]);
   let [playerOne, setPlayerOne] = useState({
     deck: [],
@@ -100,6 +107,8 @@ function App() {
 
       setSelected1(drawnCard1);
       setSelected2(drawnCard2);
+
+      handleCardComparison(drawnCard1, drawnCard2);
     } else {
       setSelected1({ suit: "shuffle", rank: "again" });
       setSelected2({ suit: "shuffle", rank: "again" });
@@ -134,12 +143,13 @@ function App() {
       warPile: [],
     }));
 
-    if (war){
-      setSelected1({ suit: "draw", rank: "card" })
-    setSelected2({ suit: "draw", rank: "card" })
-    setWar(false)
+    if (war === WAR_STATES.PENDING) {
+      setSelected1({ suit: "draw", rank: "card" });
+      setSelected2({ suit: "draw", rank: "card" });
     }
-    
+    if (war === WAR_STATES.FILLED) {
+      setWar(WAR_STATES.RESOLVED);
+    }
     setMessage("Player 1 Wins");
   }
 
@@ -159,10 +169,12 @@ function App() {
       warPile: [],
     }));
 
-    if (war){
-      setSelected1({ suit: "draw", rank: "card" })
-    setSelected2({ suit: "draw", rank: "card" })
-    setWar(false)
+    if (war === WAR_STATES.PENDING) {
+      setSelected1({ suit: "draw", rank: "card" });
+      setSelected2({ suit: "draw", rank: "card" });
+    }
+    if (war === WAR_STATES.FILLED) {
+      setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 2 Wins");
   }
@@ -170,11 +182,9 @@ function App() {
   function fillWarPiles() {
     let deckPlayer1 = [...playerOne.deck];
     let deckPlayer2 = [...playerTwo.deck];
-    let warPile1 = deckPlayer1.splice(deckPlayer1.length - 3, 3);
-    let warPile2 = deckPlayer2.splice(deckPlayer2.length - 3, 3);
+    let warPile1 = deckPlayer1.splice(-Math.min(3, deckPlayer1.length));
+    let warPile2 = deckPlayer2.splice(-Math.min(3, deckPlayer2.length));
 
-    // let warPile1 = [selected1, ...additional1];
-    // let warPile2 = [selected2, ...additional2];
     setPlayerOne((prev) => ({
       ...prev,
       deck: deckPlayer1,
@@ -185,9 +195,8 @@ function App() {
       deck: deckPlayer2,
       warPile: [...prev.warPile, ...warPile2],
     }));
-
+    setWar(WAR_STATES.FILLED);
     setMessage("War piles filled! Draw Again to resolve war.");
-    
   }
 
   function refreshDeck(playerKey) {
@@ -205,44 +214,40 @@ function App() {
     }));
   }
 
-  function handleCardComparison() {
-    if (
-      selected1.rank === "card" &&
-      selected1.suit === "draw" &&
-      selected2.rank === "card" &&
-      selected2.suit === "draw"
-    ) {
+  function handleCardComparison(card1, card2) {
+    if (!card1 || !card2) {
       return;
     }
-
-    if (!selected1 || !selected2) {
-      return;
-    }
-
-    let result = getWinner(selected1, selected2);
+    let result = getWinner(card1, card2);
     if (result === "playerOne") {
-      awardToPlayerOne(selected1, selected2);
+      awardToPlayerOne(card1, card2);
     } else if (result === "playerTwo") {
-      awardToPlayerTwo(selected1, selected2);
+      awardToPlayerTwo(card1, card2);
     } else {
-      setWar(true);
+      setWar(WAR_STATES.PENDING);
       setMessage("War!!!");
 
       setPlayerOne((prev) => ({
-      ...prev,
-      warPile: [...prev.warPile, selected1],
-    }));
-    setPlayerTwo((prev) => ({
-      ...prev,
-      warPile: [...prev.warPile, selected2],
-    }));
-
+        ...prev,
+        warPile: [...prev.warPile, card1],
+      }));
+      setPlayerTwo((prev) => ({
+        ...prev,
+        warPile: [...prev.warPile, card2],
+      }));
     }
   }
 
-  useEffect(() => {
-    handleCardComparison();
-  }, [selected1, selected2]);
+  function handleContinue() {
+    setWar(WAR_STATES.NONE);
+    setSelected1({ suit: "draw", rank: "card" });
+    setSelected2({ suit: "draw", rank: "card" });
+    setMessage("...waiting for card draw");
+  }
+
+  // useEffect(() => {
+  //   handleCardComparison();
+  // }, [selected1, selected2]);
 
   return (
     <div>
@@ -371,8 +376,23 @@ function App() {
         }}
       >
         {!start && <button onClick={startGame}>Start Game</button>}
-        {war && <button onClick={fillWarPiles}>Fill War Piles</button>}
-        <button onClick={drawCard}>Draw</button>
+
+        {start && (
+          <>
+            {war === WAR_STATES.PENDING && (
+              <button onClick={fillWarPiles}>Fill War Piles</button>
+            )}
+            {war === WAR_STATES.FILLED && (
+              <button onClick={drawCard}>Resolve War</button>
+            )}
+            {war === WAR_STATES.RESOLVED && (
+              <button onClick={handleContinue}>Continue</button>
+            )}
+            {war === WAR_STATES.NONE && (
+              <button onClick={drawCard}>Draw</button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
