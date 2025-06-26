@@ -56,13 +56,18 @@ function App() {
   }
 
   function canRefreshDeck(player) {
-    return player.deck.length === 0 && player.reserve.length > 0;
+    return player.deck.length < 3 && player.reserve.length > 0 && (war === WAR_STATES.PENDING);
   }
 
   const canDraw =
     playerOne.deck.length > 0 &&
     playerTwo.deck.length > 0 &&
     war !== WAR_STATES.PENDING;
+
+  const canRefillWarPile =
+     (playerOne.deck.length >= 3) &&
+     (playerTwo.deck.length >= 3)
+  
 
   function splitDeck(deckToSplit) {
     const deckCopy = [...deckToSplit];
@@ -300,7 +305,7 @@ function App() {
     [WAR_STATES.PENDING]: {
       handler: fillWarPiles,
       label: "Fill War Piles",
-      disabled: false,
+      disabled: !canRefillWarPile,
     },
     [WAR_STATES.FILLED]: {
       handler: drawCard,
