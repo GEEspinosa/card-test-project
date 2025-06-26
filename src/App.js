@@ -54,6 +54,15 @@ function App() {
     return newDeck;
   }
 
+  function canRefreshDeck(player) {
+    return player.deck.length === 0 && player.reserve.length > 0;
+  }
+
+  const canDraw =
+    playerOne.deck.length > 0 &&
+    playerTwo.deck.length > 0 &&
+    war !== WAR_STATES.PENDING;
+
   function splitDeck(deckToSplit) {
     const deckCopy = [...deckToSplit];
     const p1 = [];
@@ -249,10 +258,22 @@ function App() {
   }
 
   const warStateMap = {
-    [WAR_STATES.NONE]: { handler: drawCard, label: "Draw", disabled: false },
-    [WAR_STATES.PENDING]: { handler: fillWarPiles, label: "Fill War Piles", disabled: false},
-    [WAR_STATES.FILLED]: { handler: drawCard, label: "Resolve War", disabled: false },
-    [WAR_STATES.RESOLVED]: { handler: handleContinue, label: "Continue", disabled: false },
+    [WAR_STATES.NONE]: { handler: drawCard, label: "Draw", disabled: !canDraw },
+    [WAR_STATES.PENDING]: {
+      handler: fillWarPiles,
+      label: "Fill War Piles",
+      disabled: false,
+    },
+    [WAR_STATES.FILLED]: {
+      handler: drawCard,
+      label: "Resolve War",
+      disabled: !canDraw,
+    },
+    [WAR_STATES.RESOLVED]: {
+      handler: handleContinue,
+      label: "Continue",
+      disabled: false,
+    },
   };
 
   return (
@@ -328,7 +349,7 @@ function App() {
             <div>{selected1.suit}</div>
             <div>{selected1.rank}</div>
           </div>
-          {playerOne.deck.length === 0 && (
+          {start && canRefreshDeck(playerOne) && (
             <button
               onClick={() => refreshDeck("playerOne")}
               style={{ margin: "10px" }}
@@ -363,7 +384,7 @@ function App() {
             <div>{selected2.suit}</div>
             <div>{selected2.rank}</div>
           </div>
-          {playerTwo.deck.length === 0 && (
+          {start && canRefreshDeck(playerTwo) && (
             <button
               onClick={() => refreshDeck("playerTwo")}
               style={{ margin: "10px" }}
@@ -383,7 +404,10 @@ function App() {
       >
         {!start && <button onClick={startGame}>Start Game</button>}
         {start && (
-          <button onClick={warStateMap[war].handler} disabled={warStateMap[war].disabled}>
+          <button
+            onClick={warStateMap[war].handler}
+            disabled={warStateMap[war].disabled}
+          >
             {warStateMap[war].label}
           </button>
         )}
