@@ -259,13 +259,12 @@ function App() {
       return;
     }
     let result = getWinner(card1, card2);
+
     if (result === "playerOne") {
       awardToPlayerOne(card1, card2);
     } else if (result === "playerTwo") {
       awardToPlayerTwo(card1, card2);
     } else {
-      setWar(WAR_STATES.PENDING);
-      setMessage("War!!!");
 
       setPlayerOne((prev) => ({
         ...prev,
@@ -275,6 +274,15 @@ function App() {
         ...prev,
         warPile: [...prev.warPile, card2],
       }));
+
+      if (war === WAR_STATES.FILLED) {
+        setMessage("Another War!!! Fill more piles")
+      } else {
+        setMessage("War!!! Fill war piles")
+      }
+
+
+      setWar(WAR_STATES.PENDING);
     }
   }
 
