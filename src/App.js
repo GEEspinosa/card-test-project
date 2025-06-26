@@ -56,7 +56,15 @@ function App() {
   }
 
   function canRefreshDeck(player) {
-    return player.deck.length < 3 && player.reserve.length > 0 && (war === WAR_STATES.PENDING);
+    const hasReserve = player.reserve.length > 0;
+    const isInWar = war === WAR_STATES.PENDING || war === WAR_STATES.FILLED;
+    
+    if (!isInWar) {
+      return start && player.deck.length === 0 && hasReserve
+    }
+
+    const totalCards = player.deck.length + player.reserve.length;
+    return start && player.deck.length < 3 && totalCards >=3
   }
 
   const canDraw =
@@ -65,9 +73,7 @@ function App() {
     war !== WAR_STATES.PENDING;
 
   const canRefillWarPile =
-     (playerOne.deck.length >= 3) &&
-     (playerTwo.deck.length >= 3)
-  
+    playerOne.deck.length >= 3 && playerTwo.deck.length >= 3;
 
   function splitDeck(deckToSplit) {
     const deckCopy = [...deckToSplit];
@@ -92,7 +98,7 @@ function App() {
     const p2Lost = playerTwo.deck.length <= 0 && playerTwo.reserve.length <= 0;
 
     if (p1Lost || p2Lost) {
-      setWar(WAR_STATES.END)
+      setWar(WAR_STATES.END);
     }
   }
 
@@ -117,12 +123,12 @@ function App() {
     setSelected2({ suit: "draw", rank: "card" });
     setPlayerOneScore(0);
     setPlayerTwoScore(0);
-    setMessage("...waiting for card draw")
-    setWar(WAR_STATES.NONE)
+    setMessage("...waiting for card draw");
+    setWar(WAR_STATES.NONE);
   }
 
   function startGame() {
-    resetGameState()
+    resetGameState();
     setStart(true);
   }
 
@@ -130,7 +136,7 @@ function App() {
     if (war === WAR_STATES.PENDING) {
       return;
     }
-    checkGameOver()
+    checkGameOver();
     if (playerOne.deck.length && playerTwo.deck.length) {
       const deckCopy1 = [...playerOne.deck];
       const deckCopy2 = [...playerTwo.deck];
@@ -193,7 +199,7 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 1 Wins");
-    checkGameOver()
+    checkGameOver();
   }
 
   function awardToPlayerTwo(card1, card2) {
@@ -220,7 +226,7 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 2 Wins");
-    checkGameOver()
+    checkGameOver();
   }
 
   function fillWarPiles() {
@@ -256,7 +262,7 @@ function App() {
       deck: copyReserve,
       reserve: [],
     }));
-    checkGameOver()
+    checkGameOver();
   }
 
   function handleCardComparison(card1, card2) {
@@ -270,7 +276,6 @@ function App() {
     } else if (result === "playerTwo") {
       awardToPlayerTwo(card1, card2);
     } else {
-
       setPlayerOne((prev) => ({
         ...prev,
         warPile: [...prev.warPile, card1],
@@ -281,11 +286,10 @@ function App() {
       }));
 
       if (war === WAR_STATES.FILLED) {
-        setMessage("Another War!!! Fill more piles")
+        setMessage("Another War!!! Fill more piles");
       } else {
-        setMessage("War!!! Fill war piles")
+        setMessage("War!!! Fill war piles");
       }
-
 
       setWar(WAR_STATES.PENDING);
     }
@@ -297,8 +301,6 @@ function App() {
     setSelected2({ suit: "draw", rank: "card" });
     setMessage("...waiting for card draw");
   }
-
-  
 
   const warStateMap = {
     [WAR_STATES.NONE]: { handler: drawCard, label: "Draw", disabled: !canDraw },
@@ -321,7 +323,7 @@ function App() {
       handler: startGame,
       label: "New Game",
       disabled: false,
-    }
+    },
   };
 
   return (
