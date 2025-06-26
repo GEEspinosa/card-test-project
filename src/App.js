@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SUITS, RANKS, RANK_VALUES } from "./assets/card-data";
 
 class Card {
@@ -89,6 +89,9 @@ function App() {
   }
 
   function drawCard() {
+    if (war === WAR_STATES.PENDING) {
+      return;
+    }
     if (playerOne.deck.length && playerTwo.deck.length) {
       const deckCopy1 = [...playerOne.deck];
       const deckCopy2 = [...playerTwo.deck];
@@ -245,9 +248,12 @@ function App() {
     setMessage("...waiting for card draw");
   }
 
-  // useEffect(() => {
-  //   handleCardComparison();
-  // }, [selected1, selected2]);
+  const warStateMap = {
+    [WAR_STATES.NONE]: { handler: drawCard, label: "Draw", disabled: false },
+    [WAR_STATES.PENDING]: { handler: fillWarPiles, label: "Fill War Piles", disabled: false},
+    [WAR_STATES.FILLED]: { handler: drawCard, label: "Resolve War", disabled: false },
+    [WAR_STATES.RESOLVED]: { handler: handleContinue, label: "Continue", disabled: false },
+  };
 
   return (
     <div>
@@ -376,22 +382,10 @@ function App() {
         }}
       >
         {!start && <button onClick={startGame}>Start Game</button>}
-
         {start && (
-          <>
-            {war === WAR_STATES.PENDING && (
-              <button onClick={fillWarPiles}>Fill War Piles</button>
-            )}
-            {war === WAR_STATES.FILLED && (
-              <button onClick={drawCard}>Resolve War</button>
-            )}
-            {war === WAR_STATES.RESOLVED && (
-              <button onClick={handleContinue}>Continue</button>
-            )}
-            {war === WAR_STATES.NONE && (
-              <button onClick={drawCard}>Draw</button>
-            )}
-          </>
+          <button onClick={warStateMap[war].handler} disabled={warStateMap[war].disabled}>
+            {warStateMap[war].label}
+          </button>
         )}
       </div>
     </div>
