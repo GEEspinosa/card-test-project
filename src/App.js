@@ -13,6 +13,7 @@ const WAR_STATES = {
   PENDING: "pending",
   FILLED: "filled",
   RESOLVED: "resolved",
+  END: "end",
 };
 
 function App() {
@@ -81,19 +82,42 @@ function App() {
     return { p1, p2 };
   }
 
-  function startGame() {
+  function checkGameOver() {
+    const p1Lost = playerOne.deck.length <= 0 && playerOne.reserve.length <= 0;
+    const p2Lost = playerTwo.deck.length <= 0 && playerTwo.reserve.length <= 0;
+
+    if (p1Lost || p2Lost) {
+      setWar(WAR_STATES.END)
+    }
+  }
+
+  function resetGameState() {
     let deck = buildDeck();
     deck = shuffleDeck(deck);
-    setCards(deck);
     const { p1, p2 } = splitDeck(deck);
-    setPlayerOne((prev) => ({
-      ...prev,
+
+    setCards(deck);
+    setPlayerOne({
       deck: p1,
-    }));
-    setPlayerTwo((prev) => ({
-      ...prev,
+      reserve: [],
+      warPile: [],
+    });
+    setPlayerTwo({
       deck: p2,
-    }));
+      reserve: [],
+      warPile: [],
+    });
+
+    setSelected1({ suit: "draw", rank: "card" });
+    setSelected2({ suit: "draw", rank: "card" });
+    setPlayerOneScore(0);
+    setPlayerTwoScore(0);
+    setMessage("...waiting for card draw")
+    setWar(WAR_STATES.NONE)
+  }
+
+  function startGame() {
+    resetGameState()
     setStart(true);
   }
 
@@ -101,6 +125,7 @@ function App() {
     if (war === WAR_STATES.PENDING) {
       return;
     }
+    checkGameOver()
     if (playerOne.deck.length && playerTwo.deck.length) {
       const deckCopy1 = [...playerOne.deck];
       const deckCopy2 = [...playerTwo.deck];
@@ -163,6 +188,7 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 1 Wins");
+    checkGameOver()
   }
 
   function awardToPlayerTwo(card1, card2) {
@@ -189,6 +215,7 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 2 Wins");
+    checkGameOver()
   }
 
   function fillWarPiles() {
@@ -224,6 +251,7 @@ function App() {
       deck: copyReserve,
       reserve: [],
     }));
+    checkGameOver()
   }
 
   function handleCardComparison(card1, card2) {
@@ -257,6 +285,8 @@ function App() {
     setMessage("...waiting for card draw");
   }
 
+  
+
   const warStateMap = {
     [WAR_STATES.NONE]: { handler: drawCard, label: "Draw", disabled: !canDraw },
     [WAR_STATES.PENDING]: {
@@ -274,6 +304,11 @@ function App() {
       label: "Continue",
       disabled: false,
     },
+    [WAR_STATES.END]: {
+      handler: startGame,
+      label: "New Game",
+      disabled: false,
+    }
   };
 
   return (
