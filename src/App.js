@@ -229,14 +229,14 @@ function App() {
     checkGameOver();
   }
 
-  function fillWarPiles() {
+  function prepareDeckForWar(player) {
+    return shuffleDeck(player.reserve)
+  }
 
-    //make variables that store total cards for each player
+  function fillWarPiles() {
 
     let p1Total = playerOne.deck.length + playerOne.reserve.length;
     let p2Total = playerTwo.deck.length + playerTwo.reserve.length;
-
-    //make a check to see each player has more than three or end game
 
     if (p1Total < 3 || p2Total < 3) {
       setMessage("War Piles Can't Be Filled! Game Over")
@@ -244,46 +244,46 @@ function App() {
       return;
     }
 
-    //if players have more than three, refresh then proceed to fill war pile
-
-    if (playerOne.deck.length < 3 && playerOne.reserve.length > 0){
-      refreshDeck("playerOne")
-    }
-
-    if (playerTwo.deck.length < 3 && playerTwo.reserve.length > 0){
-      refreshDeck("playerTwo")
-    }
-
     let deckPlayer1 = [...playerOne.deck];
+    if (deckPlayer1.length < 3 && playerOne.reserve.length > 0){
+      deckPlayer1 = prepareDeckForWar(playerOne)
+    }
+  
     let deckPlayer2 = [...playerTwo.deck];
+    if (deckPlayer2.length < 3 && playerTwo.reserve.length > 0){
+      deckPlayer2 = prepareDeckForWar(playerTwo)
+    }
+
     let warPile1 = deckPlayer1.splice(-3);
     let warPile2 = deckPlayer2.splice(-3);
 
     setPlayerOne((prev) => ({
       ...prev,
       deck: deckPlayer1,
+      reserve: [],
       warPile: [...prev.warPile, ...warPile1],
     }));
+
     setPlayerTwo((prev) => ({
       ...prev,
       deck: deckPlayer2,
+      reserve: [],
       warPile: [...prev.warPile, ...warPile2],
     }));
+
     setWar(WAR_STATES.FILLED);
     setMessage("War piles filled! Draw Again to resolve war.");
   }
 
   function refreshDeck(playerKey) {
-    let copyReserve =
-      playerKey === "playerOne"
-        ? shuffleDeck(playerOne.reserve)
-        : shuffleDeck(playerTwo.reserve);
+    const currentPlayer = playerKey === "playerOne" ? playerOne : playerTwo;
+    const shuffled = shuffleDeck(currentPlayer.reserve)
 
     let setter = playerKey === "playerOne" ? setPlayerOne : setPlayerTwo;
 
     setter((prev) => ({
       ...prev,
-      deck: copyReserve,
+      deck: shuffled,
       reserve: [],
     }));
     checkGameOver();
