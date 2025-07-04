@@ -230,10 +230,34 @@ function App() {
   }
 
   function fillWarPiles() {
+
+    //make variables that store total cards for each player
+
+    let p1Total = playerOne.deck.length + playerOne.reserve.length;
+    let p2Total = playerTwo.deck.length + playerTwo.reserve.length;
+
+    //make a check to see each player has more than three or end game
+
+    if (p1Total < 3 || p2Total < 3) {
+      setMessage("War Piles Can't Be Filled! Game Over")
+      setWar(WAR_STATES.END)
+      return;
+    }
+
+    //if players have more than three, refresh then proceed to fill war pile
+
+    if (playerOne.deck.length < 3 && playerOne.reserve.length > 0){
+      refreshDeck("playerOne")
+    }
+
+    if (playerTwo.deck.length < 3 && playerTwo.reserve.length > 0){
+      refreshDeck("playerTwo")
+    }
+
     let deckPlayer1 = [...playerOne.deck];
     let deckPlayer2 = [...playerTwo.deck];
-    let warPile1 = deckPlayer1.splice(-Math.min(3, deckPlayer1.length));
-    let warPile2 = deckPlayer2.splice(-Math.min(3, deckPlayer2.length));
+    let warPile1 = deckPlayer1.splice(-3);
+    let warPile2 = deckPlayer2.splice(-3);
 
     setPlayerOne((prev) => ({
       ...prev,
