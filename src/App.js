@@ -105,15 +105,46 @@ function App() {
     return { p1, p2 };
   }
 
-  function checkGameOver() {
-    const p1Lost = playerOne.deck.length <= 0 && playerOne.reserve.length <= 0;
-    const p2Lost = playerTwo.deck.length <= 0 && playerTwo.reserve.length <= 0;
+  // function checkGameOver() {
+  //   const p1Lost = playerOne.deck.length <= 0 && playerOne.reserve.length <= 0;
+  //   const p2Lost = playerTwo.deck.length <= 0 && playerTwo.reserve.length <= 0;
 
-    if (p1Lost || p2Lost) {
+  //   if (p1Lost || p2Lost) {
+  //     setWar(WAR_STATES.END);
+  //   }
+  //   if (p1Lost) setMessage("player Two Wins the Game!");
+  //   else if (p2Lost) setMessage("Player One Wins the Game!");
+  // }
+
+  function checkGameOver() {
+    const p1Total =
+      playerOne.deck.length +
+      playerOne.reserve.length +
+      playerOne.warPile.length;
+    const p2Total =
+      playerTwo.deck.length +
+      playerTwo.reserve.length +
+      playerTwo.warPile.length;
+
+    const bothOut = p1Total === 0 && p2Total === 0;
+    const p1Out = p1Total === 0 && p2Total > 0;
+    const p2Out = p2Total === 0 && p1Total > 0;
+
+    if (bothOut || p1Out || p2Out) {
       setWar(WAR_STATES.END);
+
+      if (bothOut) {
+        setMessage(`Tie! Final Score: ${playerOneScore} to ${playerTwoScore}`);
+      } else if (p1Out) {
+        setMessage(
+          `Player Two Wins! Final Score: ${playerTwoScore} to ${playerOneScore}`
+        );
+      } else {
+        setMessage(
+          `Player One Wins! Final Score: ${playerOneScore} to ${playerTwoScore}`
+        );
+      }
     }
-    if (p1Lost) setMessage("player Two Wins the Game!");
-    else if (p2Lost) setMessage("Player One Wins the Game!");
   }
 
   function resetGameState() {
@@ -147,6 +178,9 @@ function App() {
   }
 
   function drawCard() {
+    if (war === WAR_STATES.END) {
+      return;
+    }
     if (war === WAR_STATES.PENDING) {
       return;
     }
@@ -303,7 +337,7 @@ function App() {
     const currentPlayer = playerKey === "playerOne" ? playerOne : playerTwo;
     let { deck, reserve } = currentPlayer;
     const shuffled = shuffleDeck(reserve);
-    const newDeck = [...shuffled, ...deck]
+    const newDeck = [...shuffled, ...deck];
 
     let setter = playerKey === "playerOne" ? setPlayerOne : setPlayerTwo;
 
@@ -383,16 +417,16 @@ function App() {
       </h1>
       <h2 style={{ display: "flex", justifyContent: "center" }}>{message}</h2>
       <div>
-  <h3 style={{ margin: "10px" }}>
-    Total Cards in Game:{" "}
-    {playerOne.deck.length +
-      playerOne.reserve.length +
-      playerOne.warPile.length +
-      playerTwo.deck.length +
-      playerTwo.reserve.length +
-      playerTwo.warPile.length}
-  </h3>
-</div>
+        <h3 style={{ margin: "10px" }}>
+          Total Cards in Game:{" "}
+          {playerOne.deck.length +
+            playerOne.reserve.length +
+            playerOne.warPile.length +
+            playerTwo.deck.length +
+            playerTwo.reserve.length +
+            playerTwo.warPile.length}
+        </h3>
+      </div>
       <div
         style={{
           display: "flex",
@@ -460,7 +494,7 @@ function App() {
             <div>{selected1.suit}</div>
             <div>{selected1.rank}</div>
           </div>
-          {start && canRefreshDeck(playerOne) && (
+          {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
             <button
               onClick={() => refreshDeck("playerOne")}
               style={{ margin: "10px" }}
@@ -495,7 +529,7 @@ function App() {
             <div>{selected2.suit}</div>
             <div>{selected2.rank}</div>
           </div>
-          {start && canRefreshDeck(playerTwo) && (
+          {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
             <button
               onClick={() => refreshDeck("playerTwo")}
               style={{ margin: "10px" }}
@@ -514,13 +548,17 @@ function App() {
         }}
       >
         {!start && <button onClick={startGame}>Start Game</button>}
-        {start && (
+        {start && war !== WAR_STATES.END && (
           <button
             onClick={warStateMap[war].handler}
             disabled={warStateMap[war].disabled}
           >
             {warStateMap[war].label}
           </button>
+        )}
+
+        {war === WAR_STATES.END && (
+          <button onClick={startGame}>New Game</button>
         )}
       </div>
     </div>
