@@ -57,14 +57,23 @@ function App() {
 
   function canRefreshDeck(player) {
     const hasReserve = player.reserve.length > 0;
-    const isInWar = war === WAR_STATES.PENDING || war === WAR_STATES.FILLED;
-    
+    const isInWar = war === WAR_STATES.PENDING;
+
+    if (!start) {
+      return false;
+    }
+
     if (!isInWar) {
-      return start && player.deck.length === 0 && hasReserve
+      return player.deck.length === 0 && hasReserve;
     }
 
     const totalCards = player.deck.length + player.reserve.length;
-    return start && player.deck.length < 3 && totalCards >=3
+    return (
+      player.deck.length < 3 &&
+      totalCards >= 3 &&
+      player.deck.length < totalCards &&
+      war === WAR_STATES.PENDING
+    );
   }
 
   const canDraw =
@@ -73,7 +82,10 @@ function App() {
     war !== WAR_STATES.PENDING;
 
   const canRefillWarPile =
-    playerOne.deck.length >= 3 && playerTwo.deck.length >= 3;
+    playerOne.deck.length >= 3 &&
+    playerTwo.deck.length >= 3 &&
+    !canRefreshDeck(playerOne) &&
+    !canRefreshDeck(playerTwo);
 
   function splitDeck(deckToSplit) {
     const deckCopy = [...deckToSplit];
@@ -100,6 +112,8 @@ function App() {
     if (p1Lost || p2Lost) {
       setWar(WAR_STATES.END);
     }
+    if (p1Lost) setMessage("player Two Wins the Game!");
+    else if (p2Lost) setMessage("Player One Wins the Game!");
   }
 
   function resetGameState() {
@@ -229,45 +243,55 @@ function App() {
     checkGameOver();
   }
 
-  function prepareDeckForWar(player) {
-    return shuffleDeck(player.reserve)
+  function prepareDeckForWar(deck, reserve) {
+    if (deck.length >= 3) {
+      return { deck: [...deck], reserve: [...reserve] };
+    }
+
+    return {
+      deck: [...shuffleDeck(reserve), ...deck],
+      reserve: [],
+    };
   }
 
   function fillWarPiles() {
-
     let p1Total = playerOne.deck.length + playerOne.reserve.length;
     let p2Total = playerTwo.deck.length + playerTwo.reserve.length;
 
     if (p1Total < 3 || p2Total < 3) {
-      setMessage("War Piles Can't Be Filled! Game Over")
-      setWar(WAR_STATES.END)
+      setMessage("War Piles Can't Be Filled! Game Over");
+      setWar(WAR_STATES.END);
       return;
     }
 
-    let deckPlayer1 = [...playerOne.deck];
-    if (deckPlayer1.length < 3 && playerOne.reserve.length > 0){
-      deckPlayer1 = prepareDeckForWar(playerOne)
-    }
-  
-    let deckPlayer2 = [...playerTwo.deck];
-    if (deckPlayer2.length < 3 && playerTwo.reserve.length > 0){
-      deckPlayer2 = prepareDeckForWar(playerTwo)
+    if (playerOne.deck.length < 3 || playerTwo.deck.length < 3) {
+      setMessage("Need to refresh deck before filling war piles!!!");
+      return;
     }
 
-    let warPile1 = deckPlayer1.splice(-3);
-    let warPile2 = deckPlayer2.splice(-3);
+    const { deck: p1Deck, reserve: p1Reserve } = prepareDeckForWar(
+      playerOne.deck,
+      playerOne.reserve
+    );
+    const { deck: p2Deck, reserve: p2Reserve } = prepareDeckForWar(
+      playerTwo.deck,
+      playerTwo.reserve
+    );
+
+    let warPile1 = p1Deck.splice(-3);
+    let warPile2 = p2Deck.splice(-3);
 
     setPlayerOne((prev) => ({
       ...prev,
-      deck: deckPlayer1,
-      reserve: [],
+      deck: p1Deck,
+      reserve: p1Reserve,
       warPile: [...prev.warPile, ...warPile1],
     }));
 
     setPlayerTwo((prev) => ({
       ...prev,
-      deck: deckPlayer2,
-      reserve: [],
+      deck: p2Deck,
+      reserve: p2Reserve,
       warPile: [...prev.warPile, ...warPile2],
     }));
 
@@ -277,7 +301,7 @@ function App() {
 
   function refreshDeck(playerKey) {
     const currentPlayer = playerKey === "playerOne" ? playerOne : playerTwo;
-    const shuffled = shuffleDeck(currentPlayer.reserve)
+    const shuffled = shuffleDeck(currentPlayer.reserve);
 
     let setter = playerKey === "playerOne" ? setPlayerOne : setPlayerTwo;
 
