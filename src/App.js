@@ -301,13 +301,15 @@ function App() {
 
   function refreshDeck(playerKey) {
     const currentPlayer = playerKey === "playerOne" ? playerOne : playerTwo;
-    const shuffled = shuffleDeck(currentPlayer.reserve);
+    let { deck, reserve } = currentPlayer;
+    const shuffled = shuffleDeck(reserve);
+    const newDeck = [...shuffled, ...deck]
 
     let setter = playerKey === "playerOne" ? setPlayerOne : setPlayerTwo;
 
     setter((prev) => ({
       ...prev,
-      deck: shuffled,
+      deck: newDeck,
       reserve: [],
     }));
     checkGameOver();
@@ -380,6 +382,17 @@ function App() {
         Attrition: The Super War Card Game!
       </h1>
       <h2 style={{ display: "flex", justifyContent: "center" }}>{message}</h2>
+      <div>
+  <h3 style={{ margin: "10px" }}>
+    Total Cards in Game:{" "}
+    {playerOne.deck.length +
+      playerOne.reserve.length +
+      playerOne.warPile.length +
+      playerTwo.deck.length +
+      playerTwo.reserve.length +
+      playerTwo.warPile.length}
+  </h3>
+</div>
       <div
         style={{
           display: "flex",
