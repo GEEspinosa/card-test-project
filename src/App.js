@@ -82,10 +82,11 @@ function App() {
     war !== WAR_STATES.PENDING;
 
   const canRefillWarPile =
-    playerOne.deck.length >= 3 &&
-    playerTwo.deck.length >= 3 &&
-    !canRefreshDeck(playerOne) &&
-    !canRefreshDeck(playerTwo);
+    war !== WAR_STATES.END &&
+    playerOne.deck.length + playerOne.reserve.length >= 3 &&
+    playerTwo.deck.length + playerTwo.reserve.length >= 3 &&
+    (playerOne.deck.length >= 3 || canRefreshDeck(playerOne)) &&
+    (playerTwo.deck.length >= 3 || canRefreshDeck(playerTwo));
 
   function splitDeck(deckToSplit) {
     const deckCopy = [...deckToSplit];
@@ -289,19 +290,45 @@ function App() {
   }
 
   function fillWarPiles() {
-    let p1Total = playerOne.deck.length + playerOne.reserve.length;
-    let p2Total = playerTwo.deck.length + playerTwo.reserve.length;
+    const p1Total = playerOne.deck.length + playerOne.reserve.length;
+    const p2Total = playerTwo.deck.length + playerTwo.reserve.length;
 
-    if (p1Total < 3 || p2Total < 3) {
-      setMessage("War Piles Can't Be Filled! Game Over");
+    // If BOTH players can't fill war piles
+    if (p1Total < 3 && p2Total < 3) {
+      setMessage("Not enough cards to fill war piles - game over!");
       setWar(WAR_STATES.END);
+      checkGameOver();
       return;
     }
 
-    if (playerOne.deck.length < 3 || playerTwo.deck.length < 3) {
+    // If ONLY player one can't continue
+    if (p1Total < 3) {
+      setMessage("Player One can't continue. Player Two wins!");
+      setWar(WAR_STATES.END);
+      checkGameOver();
+      return;
+    }
+
+    // If ONLY player two can't continue
+    if (p2Total < 3) {
+      setMessage("Player Two can't continue. Player One wins!");
+      setWar(WAR_STATES.END);
+      checkGameOver();
+      return;
+    }
+
+    // Otherwise, check if either needs to refresh deck
+    const p1CanRefresh = canRefreshDeck(playerOne);
+    const p2CanRefresh = canRefreshDeck(playerTwo);
+
+    if (
+      (playerOne.deck.length < 3 && p1CanRefresh) ||
+      (playerTwo.deck.length < 3 && p2CanRefresh)
+    ) {
       setMessage("Need to refresh deck before filling war piles!!!");
       return;
     }
+    //keep this as is
 
     const { deck: p1Deck, reserve: p1Reserve } = prepareDeckForWar(
       playerOne.deck,
