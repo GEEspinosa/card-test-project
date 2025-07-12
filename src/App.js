@@ -417,8 +417,8 @@ function App() {
     [WAR_STATES.NONE]: { handler: drawCard, label: "Draw", disabled: !canDraw },
     [WAR_STATES.PENDING]: {
       handler: fillWarPiles,
-      label: "Fill War Piles",
-      disabled: !canRefillWarPile,
+      label: !canRefillWarPile ? "Can't Fill War Piles (Click to End)" : "Fill War Piles",
+      disabled: false,
     },
     [WAR_STATES.FILLED]: {
       handler: drawCard,
