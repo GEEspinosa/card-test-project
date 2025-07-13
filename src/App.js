@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SUITS, RANKS, RANK_VALUES } from "./assets/card-data";
 
 class Card {
@@ -36,6 +36,8 @@ function App() {
   let [playerTwoScore, setPlayerTwoScore] = useState(0);
   let [message, setMessage] = useState("...waiting for card draw");
   let [log, setLog] = useState([])
+
+  const logEndRef = useRef(null);
 
   function buildDeck() {
     let deck = [];
@@ -444,6 +446,12 @@ function App() {
     },
   };
 
+  useEffect(() => {
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, [log])
+
   return (
     <div>
       <h1 style={{ display: "flex", justifyContent: "center" }}>
@@ -602,6 +610,7 @@ function App() {
           {log.map((entry, i) => (
             <li key={i}>{entry}</li>
           ))}
+          <div ref={logEndRef}/>
         </ul>
       </div>
     </div>
