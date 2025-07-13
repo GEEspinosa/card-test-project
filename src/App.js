@@ -91,9 +91,10 @@ function App() {
 
 
   function logEvent (entry) {
+    const timeStamp = new Date().toLocaleTimeString()
     setLog((prev) => {
-      const newLog = [...prev, entry];
-      return newLog.splice(-10)
+      const newLog = [...prev, `[${timeStamp}] ${entry}`];
+      return newLog.slice(-10)
     })
   }
 
