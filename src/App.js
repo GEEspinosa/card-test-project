@@ -180,13 +180,14 @@ function App() {
   }
 
   function drawCard() {
+    checkGameOver();
     if (war === WAR_STATES.END) {
       return;
     }
     if (war === WAR_STATES.PENDING) {
       return;
     }
-    checkGameOver();
+    
     if (playerOne.deck.length && playerTwo.deck.length) {
       const deckCopy1 = [...playerOne.deck];
       const deckCopy2 = [...playerTwo.deck];
