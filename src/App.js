@@ -35,6 +35,7 @@ function App() {
   let [playerOneScore, setPlayerOneScore] = useState(0);
   let [playerTwoScore, setPlayerTwoScore] = useState(0);
   let [message, setMessage] = useState("...waiting for card draw");
+  let [log, setLog] = useState([])
 
   function buildDeck() {
     let deck = [];
@@ -88,6 +89,14 @@ function App() {
     (playerOne.deck.length >= 3 || canRefreshDeck(playerOne)) &&
     (playerTwo.deck.length >= 3 || canRefreshDeck(playerTwo));
 
+
+  function logEvent (entry) {
+    setLog((prev) => {
+      const newLog = [...prev, entry];
+      return newLog.splice(-10)
+    })
+  }
+
   function splitDeck(deckToSplit) {
     const deckCopy = [...deckToSplit];
     const p1 = [];
@@ -105,17 +114,6 @@ function App() {
     }
     return { p1, p2 };
   }
-
-  // function checkGameOver() {
-  //   const p1Lost = playerOne.deck.length <= 0 && playerOne.reserve.length <= 0;
-  //   const p2Lost = playerTwo.deck.length <= 0 && playerTwo.reserve.length <= 0;
-
-  //   if (p1Lost || p2Lost) {
-  //     setWar(WAR_STATES.END);
-  //   }
-  //   if (p1Lost) setMessage("player Two Wins the Game!");
-  //   else if (p2Lost) setMessage("Player One Wins the Game!");
-  // }
 
   function checkGameOver() {
     const p1Total =
@@ -171,6 +169,7 @@ function App() {
     setPlayerTwoScore(0);
     setMessage("...waiting for card draw");
     setWar(WAR_STATES.NONE);
+    setLog([])
   }
 
   function startGame() {
@@ -248,6 +247,7 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 1 Wins");
+    //logEvent(`Player 1 wins round with ${card1.rank}${card1.suit} over ${card2.rank}${card2.suit}`)
     checkGameOver();
   }
 
@@ -275,6 +275,7 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 2 Wins");
+    //logEvent(`Player 2 wins round with ${card2.rank}${card2.suit} over ${card1.rank}${card1.suit}`)
     checkGameOver();
   }
 
@@ -382,11 +383,16 @@ function App() {
     }
     let result = getWinner(card1, card2);
 
+    const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`
+
     if (result === "playerOne") {
+      logEvent(`${playSummary} -> Player One Wins!`)
       awardToPlayerOne(card1, card2);
     } else if (result === "playerTwo") {
+      logEvent(`${playSummary} -> Player Two Wins!`)
       awardToPlayerTwo(card1, card2);
     } else {
+      logEvent(`${playSummary} -> WAR!`)
       setPlayerOne((prev) => ({
         ...prev,
         warPile: [...prev.warPile, card1],
@@ -587,6 +593,15 @@ function App() {
         {war === WAR_STATES.END && (
           <button onClick={startGame}>New Game</button>
         )}
+      </div>
+
+      <div style={{maxHeight: "200px", overflowY: "auto", marginTop: "20px" }}>
+        <h3>Event Log</h3>
+        <ul>
+          {log.map((entry, i) => (
+            <li key={i}>{entry}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
