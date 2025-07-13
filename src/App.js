@@ -180,14 +180,14 @@ function App() {
   }
 
   function drawCard() {
-    checkGameOver();
+    setTimeout(() => checkGameOver(), 0);
     if (war === WAR_STATES.END) {
       return;
     }
     if (war === WAR_STATES.PENDING) {
       return;
     }
-    
+
     if (playerOne.deck.length && playerTwo.deck.length) {
       const deckCopy1 = [...playerOne.deck];
       const deckCopy2 = [...playerTwo.deck];
@@ -209,8 +209,10 @@ function App() {
 
       handleCardComparison(drawnCard1, drawnCard2);
     } else {
-      setSelected1({ suit: "shuffle", rank: "again" });
-      setSelected2({ suit: "shuffle", rank: "again" });
+      // setSelected1({ suit: "shuffle", rank: "again" });
+      // setSelected2({ suit: "shuffle", rank: "again" });
+      setMessage('One player out of cards. Checking for winner . . .');
+      setTimeout(() => checkGameOver(), 0);
     }
   }
 
@@ -633,37 +635,16 @@ function App() {
         )}
       </div>
 
-      {/* <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "row",
-          flexWrap: "wrap",
-        }}
-      >
-        {!start && <button onClick={startGame}>Start Game</button>}
-        {start && war !== WAR_STATES.END && (
-          <button
-            onClick={warStateMap[war].handler}
-            disabled={warStateMap[war].disabled}
-          >
-            {warStateMap[war].label}
-          </button>
-        )}
-
-        {war === WAR_STATES.END && (
-          <button onClick={startGame}>New Game</button>
-        )}
-      </div> */}
-
-      <div style={styles.log}>
-        <h3>Event Log</h3>
-        <ul style={{ margin: 0, paddingLeft: "20px" }}>
-          {log.map((entry, i) => (
-            <li key={i}>{entry}</li>
-          ))}
-          <div ref={logEndRef} />
-        </ul>
+      <div>
+        <h3 style={styles.log}>Event Log</h3>
+        <div style={styles.log}>
+          <ul style={{ margin: 0, paddingLeft: "20px" }}>
+            {log.map((entry, i) => (
+              <li key={i}>{entry}</li>
+            ))}
+            <div ref={logEndRef} />
+          </ul>
+        </div>
       </div>
     </div>
   );
