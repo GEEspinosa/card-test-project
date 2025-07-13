@@ -35,7 +35,7 @@ function App() {
   let [playerOneScore, setPlayerOneScore] = useState(0);
   let [playerTwoScore, setPlayerTwoScore] = useState(0);
   let [message, setMessage] = useState("...waiting for card draw");
-  let [log, setLog] = useState([])
+  let [log, setLog] = useState([]);
 
   const logEndRef = useRef(null);
 
@@ -91,13 +91,12 @@ function App() {
     (playerOne.deck.length >= 3 || canRefreshDeck(playerOne)) &&
     (playerTwo.deck.length >= 3 || canRefreshDeck(playerTwo));
 
-
-  function logEvent (entry) {
-    const timeStamp = new Date().toLocaleTimeString()
+  function logEvent(entry) {
+    const timeStamp = new Date().toLocaleTimeString();
     setLog((prev) => {
       const newLog = [...prev, `[${timeStamp}] ${entry}`];
-      return newLog.slice(-10)
-    })
+      return newLog.slice(-10);
+    });
   }
 
   function splitDeck(deckToSplit) {
@@ -172,7 +171,7 @@ function App() {
     setPlayerTwoScore(0);
     setMessage("...waiting for card draw");
     setWar(WAR_STATES.NONE);
-    setLog([])
+    setLog([]);
   }
 
   function startGame() {
@@ -386,16 +385,16 @@ function App() {
     }
     let result = getWinner(card1, card2);
 
-    const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`
+    const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`;
 
     if (result === "playerOne") {
-      logEvent(`${playSummary} -> Player One Wins!`)
+      logEvent(`${playSummary} -> Player One Wins!`);
       awardToPlayerOne(card1, card2);
     } else if (result === "playerTwo") {
-      logEvent(`${playSummary} -> Player Two Wins!`)
+      logEvent(`${playSummary} -> Player Two Wins!`);
       awardToPlayerTwo(card1, card2);
     } else {
-      logEvent(`${playSummary} -> WAR!`)
+      logEvent(`${playSummary} -> WAR!`);
       setPlayerOne((prev) => ({
         ...prev,
         warPile: [...prev.warPile, card1],
@@ -423,10 +422,20 @@ function App() {
   }
 
   const warStateMap = {
-    [WAR_STATES.NONE]: { handler: drawCard, label: "Draw", disabled: !canDraw },
+    [WAR_STATES.NONE]: {
+      handler: drawCard,
+      label:
+        canRefreshDeck(playerOne) || canRefreshDeck(playerTwo)
+          ? "Refresh Deck(s) First"
+          : "Draw",
+      disabled:
+        !canDraw || canRefreshDeck(playerOne) || canRefreshDeck(playerTwo),
+    },
     [WAR_STATES.PENDING]: {
       handler: fillWarPiles,
-      label: !canRefillWarPile ? "Can't Fill War Piles (Click to End)" : "Fill War Piles",
+      label: !canRefillWarPile
+        ? "Can't Fill War Piles (Click to End)"
+        : "Fill War Piles",
       disabled: false,
     },
     [WAR_STATES.FILLED]: {
@@ -446,11 +455,49 @@ function App() {
     },
   };
 
+  const styles = {
+    button: {
+      padding: "10px 20px",
+      fontSize: "16px",
+      margin: "0 10px",
+      cursor: "pointer",
+      borderRadius: "8px",
+      backgroundColor: "#4CAF50",
+      color: "white",
+      border: "none",
+    },
+    cardBox: {
+      backgroundColor: "#f8f9fa",
+      border: "1px solid #ccc",
+      padding: "10px",
+      width: "100px",
+      height: "140px",
+      borderRadius: "8px",
+      textAlign: "center",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      fontWeight: "bold",
+      fontSize: "18px",
+    },
+    log: {
+      maxHeight: "180px",
+      overflowY: "auto",
+      padding: "10px",
+      backgroundColor: "#f1f1f1",
+      borderRadius: "8px",
+      margin: "20px auto",
+      width: "80%",
+      fontSize: "14px",
+      fontFamily: "monospace",
+    },
+  };
+
   useEffect(() => {
     if (logEndRef.current) {
-      logEndRef.current.scrollIntoView({behavior: 'smooth'});
+      logEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [log])
+  }, [log]);
 
   return (
     <div>
@@ -519,19 +566,7 @@ function App() {
             border: "solid black",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-              backgroundColor: "salmon",
-              padding: "15px",
-              margin: "10px",
-              width: "100px",
-              height: "140px",
-              borderRadius: "8px",
-            }}
-          >
+          <div style={styles.cardBox}>
             <h3>Player 1</h3>
             <div>{selected1.suit}</div>
             <div>{selected1.rank}</div>
@@ -554,19 +589,7 @@ function App() {
             border: "solid black",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-              backgroundColor: "salmon",
-              padding: "15px",
-              margin: "10px",
-              width: "100px",
-              height: "140px",
-              borderRadius: "8px",
-            }}
-          >
+          <div style={styles.cardBox}>
             <h3>Player 2</h3>
             <div>{selected2.suit}</div>
             <div>{selected2.rank}</div>
@@ -581,7 +604,35 @@ function App() {
           )}
         </div>
       </div>
+
       <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "20px",
+        }}
+      >
+        {!start && (
+          <button onClick={startGame} style={styles.button}>
+            Start Game
+          </button>
+        )}
+        {start && warStateMap[war] && (
+          <button
+            onClick={warStateMap[war].handler}
+            disabled={warStateMap[war].disabled}
+            style={styles.button}
+          >
+            {warStateMap[war].label}
+          </button>
+        )}
+
+        {war === WAR_STATES.END && (
+          <button onClick={startGame}>New Game</button>
+        )}
+      </div>
+
+      {/* <div
         style={{
           display: "flex",
           justifyContent: "center",
@@ -602,15 +653,15 @@ function App() {
         {war === WAR_STATES.END && (
           <button onClick={startGame}>New Game</button>
         )}
-      </div>
+      </div> */}
 
-      <div style={{maxHeight: "200px", overflowY: "auto", marginTop: "20px" }}>
+      <div style={styles.log}>
         <h3>Event Log</h3>
-        <ul>
+        <ul style={{ margin: 0, paddingLeft: "20px" }}>
           {log.map((entry, i) => (
             <li key={i}>{entry}</li>
           ))}
-          <div ref={logEndRef}/>
+          <div ref={logEndRef} />
         </ul>
       </div>
     </div>
