@@ -79,10 +79,19 @@ function App() {
     );
   }
 
-  const canDraw =
-    playerOne.deck.length > 0 &&
-    playerTwo.deck.length > 0 &&
-    war !== WAR_STATES.PENDING;
+  function needsRefresh(player) {
+    return player.deck.length === 0 && player.reserve.length > 0;
+  }
+
+
+
+  const canDraw = war !== WAR_STATES.END && !needsRefresh(playerOne) && !needsRefresh(playerTwo)
+  const isGameOver = war === WAR_STATES.END;
+   
+  // const canDraw =
+  //   playerOne.deck.length > 0 &&
+  //   playerTwo.deck.length > 0 &&
+  //   war !== WAR_STATES.PENDING;
 
   const canRefillWarPile =
     war !== WAR_STATES.END &&
@@ -615,12 +624,12 @@ function App() {
           marginTop: "20px",
         }}
       >
-        {!start && (
+        {/* {!start && (
           <button onClick={startGame} style={styles.button}>
             Start Game
           </button>
         )}
-        {start && warStateMap[war] && (
+        {start && war !== WAR_STATES.END && warStateMap[war] && (
           <button
             onClick={warStateMap[war].handler}
             disabled={warStateMap[war].disabled}
@@ -631,8 +640,24 @@ function App() {
         )}
 
         {war === WAR_STATES.END && (
-          <button onClick={startGame}>New Game</button>
-        )}
+          <button onClick={startGame} style={styles.button}>New Game</button>
+        )} */}
+
+        {!start || war === WAR_STATES.END ? (
+          <button onClick={startGame} style={styles.button}>
+            {war === WAR_STATES.END ? "New Game" : "Start Game"}
+          </button>
+        ) : (
+          warStateMap[war] && (
+          <button
+            onClick={warStateMap[war].handler}
+            disabled={warStateMap[war].disabled}
+            style={styles.button}
+          >
+            {warStateMap[war].label}
+          </button>
+          )
+        )}    
       </div>
 
       <div>
