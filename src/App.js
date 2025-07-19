@@ -19,7 +19,7 @@ const WAR_STATES = {
 function App() {
   let [start, setStart] = useState(false);
   let [war, setWar] = useState(WAR_STATES.NONE);
-  let [cards, setCards] = useState([]);
+  //let [cards, setCards] = useState([]);
   let [playerOne, setPlayerOne] = useState({
     deck: [],
     reserve: [],
@@ -34,6 +34,8 @@ function App() {
   let [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
   let [playerOneScore, setPlayerOneScore] = useState(0);
   let [playerTwoScore, setPlayerTwoScore] = useState(0);
+  let [playerOneWins, setPlayerOneWins] = useState(0);
+  let [playerTwoWins, setPlayerTwoWins] = useState(0)
   let [message, setMessage] = useState("...waiting for card draw");
   let [log, setLog] = useState([]);
 
@@ -83,15 +85,10 @@ function App() {
     return player.deck.length === 0 && player.reserve.length > 0;
   }
 
-
-
-  const canDraw = war !== WAR_STATES.END && !needsRefresh(playerOne) && !needsRefresh(playerTwo)
-  const isGameOver = war === WAR_STATES.END;
-   
-  // const canDraw =
-  //   playerOne.deck.length > 0 &&
-  //   playerTwo.deck.length > 0 &&
-  //   war !== WAR_STATES.PENDING;
+  const canDraw =
+    war !== WAR_STATES.END &&
+    !needsRefresh(playerOne) &&
+    !needsRefresh(playerTwo);
 
   const canRefillWarPile =
     war !== WAR_STATES.END &&
@@ -149,10 +146,12 @@ function App() {
         setMessage(
           `Player Two Wins! Final Score: ${playerTwoScore} to ${playerOneScore}`
         );
+        setPlayerTwoWins((prev) => prev + 1)
       } else {
         setMessage(
           `Player One Wins! Final Score: ${playerOneScore} to ${playerTwoScore}`
         );
+        setPlayerOneWins((prev) => prev + 1)
       }
     }
   }
@@ -162,7 +161,7 @@ function App() {
     deck = shuffleDeck(deck);
     const { p1, p2 } = splitDeck(deck);
 
-    setCards(deck);
+    //setCards(deck);
     setPlayerOne({
       deck: p1,
       reserve: [],
@@ -218,9 +217,7 @@ function App() {
 
       handleCardComparison(drawnCard1, drawnCard2);
     } else {
-      // setSelected1({ suit: "shuffle", rank: "again" });
-      // setSelected2({ suit: "shuffle", rank: "again" });
-      setMessage('One player out of cards. Checking for winner . . .');
+      setMessage("One player out of cards. Checking for winner . . .");
       setTimeout(() => checkGameOver(), 0);
     }
   }
@@ -261,7 +258,6 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 1 Wins");
-    //logEvent(`Player 1 wins round with ${card1.rank}${card1.suit} over ${card2.rank}${card2.suit}`)
     checkGameOver();
   }
 
@@ -289,7 +285,6 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 2 Wins");
-    //logEvent(`Player 2 wins round with ${card2.rank}${card2.suit} over ${card1.rank}${card1.suit}`)
     checkGameOver();
   }
 
@@ -421,7 +416,6 @@ function App() {
       } else {
         setMessage("War!!! Fill war piles");
       }
-
       setWar(WAR_STATES.PENDING);
     }
   }
@@ -432,6 +426,14 @@ function App() {
     setSelected2({ suit: "draw", rank: "card" });
     setMessage("...waiting for card draw");
   }
+
+  function hasNoCards(player) {
+  return (
+    player.deck.length === 0 &&
+    player.reserve.length === 0 &&
+    player.warPile.length === 0
+  );
+}
 
   const warStateMap = {
     [WAR_STATES.NONE]: {
@@ -456,7 +458,15 @@ function App() {
       disabled: !canDraw,
     },
     [WAR_STATES.RESOLVED]: {
-      handler: handleContinue,
+      handler: () => {
+        if (hasNoCards(playerOne) || hasNoCards(playerTwo)) {
+          checkGameOver()
+          return
+        } else {
+          handleContinue()
+          return
+        }
+        },
       label: "Continue",
       disabled: false,
     },
@@ -538,6 +548,7 @@ function App() {
         }}
       >
         <div>
+          <h3 style={{ margin: "10px" }}>Player One Wins: {playerOneWins}</h3>
           <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
           <h3 style={{ margin: "10px" }}>
             Player One Deck Count: {playerOne.deck.length}
@@ -550,6 +561,7 @@ function App() {
           </h3>
         </div>
         <div>
+          <h3 style={{ margin: "10px" }}>Player Two Wins: {playerTwoWins}</h3>
           <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
           <h3 style={{ margin: "10px" }}>
             Player Two Deck Count: {playerTwo.deck.length}
@@ -624,40 +636,21 @@ function App() {
           marginTop: "20px",
         }}
       >
-        {/* {!start && (
-          <button onClick={startGame} style={styles.button}>
-            Start Game
-          </button>
-        )}
-        {start && war !== WAR_STATES.END && warStateMap[war] && (
-          <button
-            onClick={warStateMap[war].handler}
-            disabled={warStateMap[war].disabled}
-            style={styles.button}
-          >
-            {warStateMap[war].label}
-          </button>
-        )}
-
-        {war === WAR_STATES.END && (
-          <button onClick={startGame} style={styles.button}>New Game</button>
-        )} */}
-
         {!start || war === WAR_STATES.END ? (
           <button onClick={startGame} style={styles.button}>
             {war === WAR_STATES.END ? "New Game" : "Start Game"}
           </button>
         ) : (
           warStateMap[war] && (
-          <button
-            onClick={warStateMap[war].handler}
-            disabled={warStateMap[war].disabled}
-            style={styles.button}
-          >
-            {warStateMap[war].label}
-          </button>
+            <button
+              onClick={warStateMap[war].handler}
+              disabled={warStateMap[war].disabled}
+              style={styles.button}
+            >
+              {warStateMap[war].label}
+            </button>
           )
-        )}    
+        )}
       </div>
 
       <div>
