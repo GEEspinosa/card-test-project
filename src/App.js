@@ -532,7 +532,6 @@ function App() {
       </div>
 
       <div className="players-info">
-
         {/* Player one info */}
         <div className="player-info">
           <h3>Player One</h3>
@@ -556,7 +555,7 @@ function App() {
           <div className="card">
             {selected2.rank} {selected2.suit}
           </div>
-          {start && war !==WAR_STATES.END && canRefreshDeck(playerOne) && (
+          {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
             <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck</button>
           )}
           <div className="stats">
@@ -565,20 +564,28 @@ function App() {
             <p>Reserve: {playerTwo.reserve.length}</p>
             <p>War Pile: {playerTwo.warPile.length}</p>
           </div>
-
         </div>
       </div>
-      
-      <div className="center-controls">
+
+      <div className="game-controls">
+        {/* Refresh Buttons */}
+        {/* {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
+    <button onClick={() => refreshDeck("playerOne")}>Fresh Deck (P1)</button>
+  )}
+  {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
+    <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck (P2)</button>
+  )} */}
+
+        {/* Main Action Button (draw, fill war pile, resolve, continue, etc) */}
         {!start || war === WAR_STATES.END ? (
-          <button onClick = {startGame}>
+          <button onClick={startGame}>
             {war === WAR_STATES.END ? "Start New Game" : "Play Again"}
           </button>
         ) : (
           warStateMap[war] && (
             <button
-              onClick = {warStateMap[war].handler}
-              disabiled = {warStateMap[war].disabled}
+              onClick={warStateMap[war].handler}
+              disabled={warStateMap[war].disabled}
             >
               {warStateMap[war].label}
             </button>
@@ -593,7 +600,7 @@ function App() {
             {log.map((entry, i) => (
               <li key={i}>{entry}</li>
             ))}
-            <div ref={logEndRef}/>
+            <div ref={logEndRef} />
           </ul>
         </div>
       </div>
