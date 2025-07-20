@@ -34,8 +34,8 @@ function App() {
   let [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
   let [playerOneScore, setPlayerOneScore] = useState(0);
   let [playerTwoScore, setPlayerTwoScore] = useState(0);
-  let [playerOneWins, setPlayerOneWins] = useState(0);
-  let [playerTwoWins, setPlayerTwoWins] = useState(0)
+  let [playerOneVictories, setPlayerOneVictories] = useState(0);
+  let [playerTwoVictories, setPlayerTwoVictories] = useState(0)
   let [message, setMessage] = useState("...waiting for card draw");
   let [log, setLog] = useState([]);
 
@@ -146,12 +146,12 @@ function App() {
         setMessage(
           `Player Two Wins! Final Score: ${playerTwoScore} to ${playerOneScore}`
         );
-        setPlayerTwoWins((prev) => prev + 1)
+        setPlayerTwoVictories((prev) => prev + 1)
       } else {
         setMessage(
           `Player One Wins! Final Score: ${playerOneScore} to ${playerTwoScore}`
         );
-        setPlayerOneWins((prev) => prev + 1)
+        setPlayerOneVictories((prev) => prev + 1)
       }
     }
   }
@@ -548,7 +548,7 @@ function App() {
         }}
       >
         <div>
-          <h3 style={{ margin: "10px" }}>Player One Wins: {playerOneWins}</h3>
+          <h3 style={{ margin: "10px" }}>Player One Victories: {playerOneVictories}</h3>
           <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
           <h3 style={{ margin: "10px" }}>
             Player One Deck Count: {playerOne.deck.length}
@@ -561,7 +561,7 @@ function App() {
           </h3>
         </div>
         <div>
-          <h3 style={{ margin: "10px" }}>Player Two Wins: {playerTwoWins}</h3>
+          <h3 style={{ margin: "10px" }}>Player Two Victories: {playerTwoVictories}</h3>
           <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
           <h3 style={{ margin: "10px" }}>
             Player Two Deck Count: {playerTwo.deck.length}
@@ -638,7 +638,7 @@ function App() {
       >
         {!start || war === WAR_STATES.END ? (
           <button onClick={startGame} style={styles.button}>
-            {war === WAR_STATES.END ? "New Game" : "Start Game"}
+            {war === WAR_STATES.END ? "Start New Game" : "Play Again"}
           </button>
         ) : (
           warStateMap[war] && (
