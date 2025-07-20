@@ -522,56 +522,79 @@ function App() {
   }, [log]);
 
   return (
-    <div>
-      <div className="game-board">
-        <div className="score">
-          <div>
-            Player One Wins: {playerOneVictories} | Player Two Wins:
-            {playerTwoVictories}
-          </div>
-        </div>
+    <div className="app-container">
+      <h1 className="title">Attrition: The Super War Card Game!</h1>
+      <h2 className="message">{message}</h2>
 
-        <div className="player1">
+      <div className="scoreboard">
+        <div>Player One Victories: {playerOneVictories}</div>
+        <div>Player Two Victories: {playerTwoVictories}</div>
+      </div>
+
+      <div className="players-info">
+
+        {/* Player one info */}
+        <div className="player-info">
           <h3>Player One</h3>
-          <div className="card-row">
-            {playerOne.warPile.map((card, i) => (
-              <div key={i} className="card">
-                {card.rank} {card.suit}
-              </div>
-            ))}
+          <div className="card">
+            {selected1.rank} {selected1.suit}
           </div>
-          <div className="card-row">
-            <div>Deck: {playerOne.deck.length}</div>
-            <div>Reserve: {playerOne.reserve.length}</div>
+          {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
+            <button onClick={() => refreshDeck("playerOne")}>Fresh Deck</button>
+          )}
+          <div className="stats">
+            <p>Score: {playerOneScore}</p>
+            <p>Deck: {playerOne.deck.length}</p>
+            <p>Reserve: {playerOne.reserve.length}</p>
+            <p>War Pile: {playerOne.warPile.length}</p>
           </div>
         </div>
 
-        <div className="player2">
+        {/* Player two info */}
+        <div className="player-info">
           <h3>Player Two</h3>
-          <div className="card-row">
-            {playerTwo.warPile.map((card, i) => (
-              <div key={i} className="card">
-                {card.rank} {card.suit}
-              </div>
-            ))}
+          <div className="card">
+            {selected2.rank} {selected2.suit}
           </div>
-          <div className="card-row">
-            <div>Deck: {playerTwo.deck.length}</div>
-            <div>Reserve: {playerTwo.reserve.length}</div>
+          {start && war !==WAR_STATES.END && canRefreshDeck(playerOne) && (
+            <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck</button>
+          )}
+          <div className="stats">
+            <p>Score: {playerTwoScore}</p>
+            <p>Deck: {playerTwo.deck.length}</p>
+            <p>Reserve: {playerTwo.reserve.length}</p>
+            <p>War Pile: {playerTwo.warPile.length}</p>
           </div>
-        </div>
 
-        <div className="controls">
-          {!start && <button onClick={startGame}>Start Game</button>}
-          {start && warStateMap[war] && (
+        </div>
+      </div>
+      
+      <div className="center-controls">
+        {!start || war === WAR_STATES.END ? (
+          <button onClick = {startGame}>
+            {war === WAR_STATES.END ? "Start New Game" : "Play Again"}
+          </button>
+        ) : (
+          warStateMap[war] && (
             <button
-              onClick={warStateMap[war].handler}
-              disabled={warStateMap[war].disabled}
+              onClick = {warStateMap[war].handler}
+              disabiled = {warStateMap[war].disabled}
             >
               {warStateMap[war].label}
             </button>
-          )}
-          {war === WAR_STATES.END && <button onClick={startGame}>New Game</button>}
+          )
+        )}
+      </div>
+
+      <div className="log-section">
+        <h3>Event Log</h3>
+        <div className="log-box">
+          <ul>
+            {log.map((entry, i) => (
+              <li key={i}>{entry}</li>
+            ))}
+            <div ref={logEndRef}/>
+          </ul>
         </div>
       </div>
     </div>
