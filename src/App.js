@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import "./App.css";
 import { SUITS, RANKS, RANK_VALUES } from "./assets/card-data";
 
 class Card {
@@ -19,7 +20,6 @@ const WAR_STATES = {
 function App() {
   let [start, setStart] = useState(false);
   let [war, setWar] = useState(WAR_STATES.NONE);
-  //let [cards, setCards] = useState([]);
   let [playerOne, setPlayerOne] = useState({
     deck: [],
     reserve: [],
@@ -35,7 +35,7 @@ function App() {
   let [playerOneScore, setPlayerOneScore] = useState(0);
   let [playerTwoScore, setPlayerTwoScore] = useState(0);
   let [playerOneVictories, setPlayerOneVictories] = useState(0);
-  let [playerTwoVictories, setPlayerTwoVictories] = useState(0)
+  let [playerTwoVictories, setPlayerTwoVictories] = useState(0);
   let [message, setMessage] = useState("...waiting for card draw");
   let [log, setLog] = useState([]);
 
@@ -146,12 +146,12 @@ function App() {
         setMessage(
           `Player Two Wins! Final Score: ${playerTwoScore} to ${playerOneScore}`
         );
-        setPlayerTwoVictories((prev) => prev + 1)
+        setPlayerTwoVictories((prev) => prev + 1);
       } else {
         setMessage(
           `Player One Wins! Final Score: ${playerOneScore} to ${playerTwoScore}`
         );
-        setPlayerOneVictories((prev) => prev + 1)
+        setPlayerOneVictories((prev) => prev + 1);
       }
     }
   }
@@ -428,12 +428,12 @@ function App() {
   }
 
   function hasNoCards(player) {
-  return (
-    player.deck.length === 0 &&
-    player.reserve.length === 0 &&
-    player.warPile.length === 0
-  );
-}
+    return (
+      player.deck.length === 0 &&
+      player.reserve.length === 0 &&
+      player.warPile.length === 0
+    );
+  }
 
   const warStateMap = {
     [WAR_STATES.NONE]: {
@@ -460,13 +460,13 @@ function App() {
     [WAR_STATES.RESOLVED]: {
       handler: () => {
         if (hasNoCards(playerOne) || hasNoCards(playerTwo)) {
-          checkGameOver()
-          return
+          checkGameOver();
+          return;
         } else {
-          handleContinue()
-          return
+          handleContinue();
+          return;
         }
-        },
+      },
       label: "Continue",
       disabled: false,
     },
@@ -523,145 +523,55 @@ function App() {
 
   return (
     <div>
-      <h1 style={{ display: "flex", justifyContent: "center" }}>
-        Attrition: The Super War Card Game!
-      </h1>
-      <h2 style={{ display: "flex", justifyContent: "center" }}>{message}</h2>
-      <div>
-        <h3 style={{ margin: "10px" }}>
-          Total Cards in Game:{" "}
-          {playerOne.deck.length +
-            playerOne.reserve.length +
-            playerOne.warPile.length +
-            playerTwo.deck.length +
-            playerTwo.reserve.length +
-            playerTwo.warPile.length}
-        </h3>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          padding: "10px",
-        }}
-      >
-        <div>
-          <h3 style={{ margin: "10px" }}>Player One Victories: {playerOneVictories}</h3>
-          <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
-          <h3 style={{ margin: "10px" }}>
-            Player One Deck Count: {playerOne.deck.length}
-          </h3>
-          <h3 style={{ margin: "10px" }}>
-            Player One Deck Reserve: {playerOne.reserve.length}
-          </h3>
-          <h3 style={{ margin: "10px" }}>
-            Player One Deck War Pile: {playerOne.warPile.length}
-          </h3>
-        </div>
-        <div>
-          <h3 style={{ margin: "10px" }}>Player Two Victories: {playerTwoVictories}</h3>
-          <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
-          <h3 style={{ margin: "10px" }}>
-            Player Two Deck Count: {playerTwo.deck.length}
-          </h3>
-          <h3 style={{ margin: "10px" }}>
-            Player Two Deck Reserve: {playerTwo.reserve.length}
-          </h3>
-          <h3 style={{ margin: "10px" }}>
-            Player Two Deck War Pile: {playerTwo.warPile.length}
-          </h3>
-        </div>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "row",
-          flexWrap: "wrap",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-            border: "solid black",
-          }}
-        >
-          <div style={styles.cardBox}>
-            <h3>Player 1</h3>
-            <div>{selected1.suit}</div>
-            <div>{selected1.rank}</div>
+      <div className="game-board">
+        <div className="score">
+          <div>
+            Player One Wins: {playerOneVictories} | Player Two Wins:
+            {playerTwoVictories}
           </div>
-          {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
-            <button
-              onClick={() => refreshDeck("playerOne")}
-              style={{ margin: "10px" }}
-            >
-              Fresh Deck
-            </button>
-          )}
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-            border: "solid black",
-          }}
-        >
-          <div style={styles.cardBox}>
-            <h3>Player 2</h3>
-            <div>{selected2.suit}</div>
-            <div>{selected2.rank}</div>
+        <div className="player1">
+          <h3>Player One</h3>
+          <div className="card-row">
+            {playerOne.warPile.map((card, i) => (
+              <div key={i} className="card">
+                {card.rank} {card.suit}
+              </div>
+            ))}
           </div>
-          {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
-            <button
-              onClick={() => refreshDeck("playerTwo")}
-              style={{ margin: "10px" }}
-            >
-              Fresh Deck
-            </button>
-          )}
+          <div className="card-row">
+            <div>Deck: {playerOne.deck.length}</div>
+            <div>Reserve: {playerOne.reserve.length}</div>
+          </div>
         </div>
-      </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "20px",
-        }}
-      >
-        {!start || war === WAR_STATES.END ? (
-          <button onClick={startGame} style={styles.button}>
-            {war === WAR_STATES.END ? "Start New Game" : "Play Again"}
-          </button>
-        ) : (
-          warStateMap[war] && (
+        <div className="player2">
+          <h3>Player Two</h3>
+          <div className="card-row">
+            {playerTwo.warPile.map((card, i) => (
+              <div key={i} className="card">
+                {card.rank} {card.suit}
+              </div>
+            ))}
+          </div>
+          <div className="card-row">
+            <div>Deck: {playerTwo.deck.length}</div>
+            <div>Reserve: {playerTwo.reserve.length}</div>
+          </div>
+        </div>
+
+        <div className="controls">
+          {!start && <button onClick={startGame}>Start Game</button>}
+          {start && warStateMap[war] && (
             <button
               onClick={warStateMap[war].handler}
               disabled={warStateMap[war].disabled}
-              style={styles.button}
             >
               {warStateMap[war].label}
             </button>
-          )
-        )}
-      </div>
-
-      <div>
-        <h3 style={styles.log}>Event Log</h3>
-        <div style={styles.log}>
-          <ul style={{ margin: 0, paddingLeft: "20px" }}>
-            {log.map((entry, i) => (
-              <li key={i}>{entry}</li>
-            ))}
-            <div ref={logEndRef} />
-          </ul>
+          )}
+          {war === WAR_STATES.END && <button onClick={startGame}>New Game</button>}
         </div>
       </div>
     </div>
@@ -669,3 +579,145 @@ function App() {
 }
 
 export default App;
+
+// <h1 style={{ display: "flex", justifyContent: "center" }}>
+//       Attrition: The Super War Card Game!
+//     </h1>
+//     <h2 style={{ display: "flex", justifyContent: "center" }}>{message}</h2>
+//     <div>
+//       <h3 style={{ margin: "10px" }}>
+//         Total Cards in Game:{" "}
+//         {playerOne.deck.length +
+//           playerOne.reserve.length +
+//           playerOne.warPile.length +
+//           playerTwo.deck.length +
+//           playerTwo.reserve.length +
+//           playerTwo.warPile.length}
+//       </h3>
+//     </div>
+//     <div
+//       style={{
+//         display: "flex",
+//         justifyContent: "center",
+//         flexDirection: "row",
+//         flexWrap: "wrap",
+//         padding: "10px",
+//       }}
+//     >
+//       <div>
+//         <h3 style={{ margin: "10px" }}>Player One Victories: {playerOneVictories}</h3>
+//         <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
+//         <h3 style={{ margin: "10px" }}>
+//           Player One Deck Count: {playerOne.deck.length}
+//         </h3>
+//         <h3 style={{ margin: "10px" }}>
+//           Player One Deck Reserve: {playerOne.reserve.length}
+//         </h3>
+//         <h3 style={{ margin: "10px" }}>
+//           Player One Deck War Pile: {playerOne.warPile.length}
+//         </h3>
+//       </div>
+//       <div>
+//         <h3 style={{ margin: "10px" }}>Player Two Victories: {playerTwoVictories}</h3>
+//         <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
+//         <h3 style={{ margin: "10px" }}>
+//           Player Two Deck Count: {playerTwo.deck.length}
+//         </h3>
+//         <h3 style={{ margin: "10px" }}>
+//           Player Two Deck Reserve: {playerTwo.reserve.length}
+//         </h3>
+//         <h3 style={{ margin: "10px" }}>
+//           Player Two Deck War Pile: {playerTwo.warPile.length}
+//         </h3>
+//       </div>
+//     </div>
+//     <div
+//       style={{
+//         display: "flex",
+//         justifyContent: "center",
+//         flexDirection: "row",
+//         flexWrap: "wrap",
+//       }}
+//     >
+//       <div
+//         style={{
+//           display: "flex",
+//           alignItems: "center",
+//           flexDirection: "column",
+//           border: "solid black",
+//         }}
+//       >
+//         <div style={styles.cardBox}>
+//           <h3>Player 1</h3>
+//           <div>{selected1.suit}</div>
+//           <div>{selected1.rank}</div>
+//         </div>
+//         {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
+//           <button
+//             onClick={() => refreshDeck("playerOne")}
+//             style={{ margin: "10px" }}
+//           >
+//             Fresh Deck
+//           </button>
+//         )}
+//       </div>
+
+//       <div
+//         style={{
+//           display: "flex",
+//           alignItems: "center",
+//           flexDirection: "column",
+//           border: "solid black",
+//         }}
+//       >
+//         <div style={styles.cardBox}>
+//           <h3>Player 2</h3>
+//           <div>{selected2.suit}</div>
+//           <div>{selected2.rank}</div>
+//         </div>
+//         {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
+//           <button
+//             onClick={() => refreshDeck("playerTwo")}
+//             style={{ margin: "10px" }}
+//           >
+//             Fresh Deck
+//           </button>
+//         )}
+//       </div>
+//     </div>
+
+//     <div
+//       style={{
+//         display: "flex",
+//         justifyContent: "center",
+//         marginTop: "20px",
+//       }}
+//     >
+//       {!start || war === WAR_STATES.END ? (
+//         <button onClick={startGame} style={styles.button}>
+//           {war === WAR_STATES.END ? "Start New Game" : "Play Again"}
+//         </button>
+//       ) : (
+//         warStateMap[war] && (
+//           <button
+//             onClick={warStateMap[war].handler}
+//             disabled={warStateMap[war].disabled}
+//             style={styles.button}
+//           >
+//             {warStateMap[war].label}
+//           </button>
+//         )
+//       )}
+//     </div>
+
+//     <div>
+//       <h3 style={styles.log}>Event Log</h3>
+//       <div style={styles.log}>
+//         <ul style={{ margin: 0, paddingLeft: "20px" }}>
+//           {log.map((entry, i) => (
+//             <li key={i}>{entry}</li>
+//           ))}
+//           <div ref={logEndRef} />
+//         </ul>
+//       </div>
+//     </div>

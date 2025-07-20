@@ -1,0 +1,55 @@
+.game-board {
+    display: grid;
+    grid-template-areas: "score score"
+    "player1 player2"
+    "controls controls";
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+
+.score {
+    grid-area: score;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.player1, .player2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.player1 {
+    grid-area: player1
+}
+
+.player2 {
+    grid-area: player2;
+}
+
+
+.card-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.controls {
+    grid-area: controls;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.card {
+    width: 60px;
+    height: 90px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
