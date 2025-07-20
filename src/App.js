@@ -19,6 +19,7 @@ const WAR_STATES = {
 
 function App() {
   let [start, setStart] = useState(false);
+  //let [hasStartedPlaying, setHasStartedPlaying] = useState(false);
   let [war, setWar] = useState(WAR_STATES.NONE);
   let [playerOne, setPlayerOne] = useState({
     deck: [],
@@ -123,7 +124,20 @@ function App() {
     return { p1, p2 };
   }
 
+  const gameOverHandled = useRef(false);
+
   function checkGameOver() {
+    if (!start) return;
+
+    const cardsPlayed =
+      52 -
+      (playerOne.deck.length +
+        playerOne.reserve.length +
+        playerTwo.deck.length +
+        playerTwo.reserve.length);
+    if (cardsPlayed === 0) return;
+    if (gameOverHandled.current) return;
+
     const p1Total =
       playerOne.deck.length +
       playerOne.reserve.length +
@@ -133,11 +147,17 @@ function App() {
       playerTwo.reserve.length +
       playerTwo.warPile.length;
 
+    const noCardsHaveBeenPlayed = p1Total + p2Total === 52;
+    if (noCardsHaveBeenPlayed) return;
+
     const bothOut = p1Total === 0 && p2Total === 0;
     const p1Out = p1Total === 0 && p2Total > 0;
     const p2Out = p2Total === 0 && p1Total > 0;
 
     if (bothOut || p1Out || p2Out) {
+      if (gameOverHandled.current) return;
+      gameOverHandled.current = true;
+
       setWar(WAR_STATES.END);
 
       if (bothOut) {
@@ -160,8 +180,6 @@ function App() {
     let deck = buildDeck();
     deck = shuffleDeck(deck);
     const { p1, p2 } = splitDeck(deck);
-
-    //setCards(deck);
     setPlayerOne({
       deck: p1,
       reserve: [],
@@ -180,6 +198,8 @@ function App() {
     setMessage("...waiting for card draw");
     setWar(WAR_STATES.NONE);
     setLog([]);
+    //setHasStartedPlaying(false);
+    gameOverHandled.current = false;
   }
 
   function startGame() {
@@ -188,7 +208,6 @@ function App() {
   }
 
   function drawCard() {
-    setTimeout(() => checkGameOver(), 0);
     if (war === WAR_STATES.END) {
       return;
     }
@@ -215,10 +234,12 @@ function App() {
       setSelected1(drawnCard1);
       setSelected2(drawnCard2);
 
+      //setHasStartedPlaying(true);
+
       handleCardComparison(drawnCard1, drawnCard2);
     } else {
       setMessage("One player out of cards. Checking for winner . . .");
-      setTimeout(() => checkGameOver(), 0);
+      setWar(WAR_STATES.END);
     }
   }
 
@@ -235,6 +256,8 @@ function App() {
   }
 
   function awardToPlayerOne(card1, card2) {
+    if (war === WAR_STATES.END) return;
+
     setPlayerOneScore((prev) => prev + 1);
 
     const warPile1 = playerOne.warPile;
@@ -258,10 +281,11 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 1 Wins");
-    checkGameOver();
   }
 
   function awardToPlayerTwo(card1, card2) {
+    if (war === WAR_STATES.END) return;
+
     setPlayerTwoScore((prev) => prev + 1);
 
     const warPile1 = playerOne.warPile;
@@ -285,7 +309,6 @@ function App() {
       setWar(WAR_STATES.RESOLVED);
     }
     setMessage("Player 2 Wins");
-    checkGameOver();
   }
 
   function prepareDeckForWar(deck, reserve) {
@@ -307,7 +330,6 @@ function App() {
     if (p1Total < 3 && p2Total < 3) {
       setMessage("Not enough cards to fill war piles - game over!");
       setWar(WAR_STATES.END);
-      checkGameOver();
       return;
     }
 
@@ -315,7 +337,6 @@ function App() {
     if (p1Total < 3) {
       setMessage("Player One can't continue. Player Two wins!");
       setWar(WAR_STATES.END);
-      checkGameOver();
       return;
     }
 
@@ -323,7 +344,6 @@ function App() {
     if (p2Total < 3) {
       setMessage("Player Two can't continue. Player One wins!");
       setWar(WAR_STATES.END);
-      checkGameOver();
       return;
     }
 
@@ -371,6 +391,8 @@ function App() {
   }
 
   function refreshDeck(playerKey) {
+    if (war === WAR_STATES.END) return;
+
     const currentPlayer = playerKey === "playerOne" ? playerOne : playerTwo;
     let { deck, reserve } = currentPlayer;
     const shuffled = shuffleDeck(reserve);
@@ -383,10 +405,11 @@ function App() {
       deck: newDeck,
       reserve: [],
     }));
-    checkGameOver();
   }
 
   function handleCardComparison(card1, card2) {
+    if (war === WAR_STATES.END) return;
+
     if (!card1 || !card2) {
       return;
     }
@@ -424,6 +447,16 @@ function App() {
     setWar(WAR_STATES.NONE);
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
+
+    const p1Empty = hasNoCards(playerOne);
+    const p2Empty = hasNoCards(playerTwo);
+
+    if (p1Empty || p2Empty) {
+      checkGameOver();
+      return;
+    }
+
+    setWar(WAR_STATES.NONE);
     setMessage("...waiting for card draw");
   }
 
@@ -460,7 +493,6 @@ function App() {
     [WAR_STATES.RESOLVED]: {
       handler: () => {
         if (hasNoCards(playerOne) || hasNoCards(playerTwo)) {
-          checkGameOver();
           return;
         } else {
           handleContinue();
@@ -477,43 +509,17 @@ function App() {
     },
   };
 
-  const styles = {
-    button: {
-      padding: "10px 20px",
-      fontSize: "16px",
-      margin: "0 10px",
-      cursor: "pointer",
-      borderRadius: "8px",
-      backgroundColor: "#4CAF50",
-      color: "white",
-      border: "none",
-    },
-    cardBox: {
-      backgroundColor: "#f8f9fa",
-      border: "1px solid #ccc",
-      padding: "10px",
-      width: "100px",
-      height: "140px",
-      borderRadius: "8px",
-      textAlign: "center",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      fontWeight: "bold",
-      fontSize: "18px",
-    },
-    log: {
-      maxHeight: "180px",
-      overflowY: "auto",
-      padding: "10px",
-      backgroundColor: "#f1f1f1",
-      borderRadius: "8px",
-      margin: "20px auto",
-      width: "80%",
-      fontSize: "14px",
-      fontFamily: "monospace",
-    },
-  };
+  useEffect(() => {
+    checkGameOver();
+  }, [
+    playerOne.deck,
+    playerOne.reserve,
+    playerOne.warPile,
+    playerTwo.deck,
+    playerTwo.reserve,
+    playerTwo.warPile,
+    war,
+  ]);
 
   useEffect(() => {
     if (logEndRef.current) {
@@ -568,18 +574,10 @@ function App() {
       </div>
 
       <div className="game-controls">
-        {/* Refresh Buttons */}
-        {/* {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
-    <button onClick={() => refreshDeck("playerOne")}>Fresh Deck (P1)</button>
-  )}
-  {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
-    <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck (P2)</button>
-  )} */}
-
         {/* Main Action Button (draw, fill war pile, resolve, continue, etc) */}
         {!start || war === WAR_STATES.END ? (
           <button onClick={startGame}>
-            {war === WAR_STATES.END ? "Start New Game" : "Play Again"}
+            {war === WAR_STATES.END ? "Start New Game" : "Start Game"}
           </button>
         ) : (
           warStateMap[war] && (
@@ -609,145 +607,3 @@ function App() {
 }
 
 export default App;
-
-// <h1 style={{ display: "flex", justifyContent: "center" }}>
-//       Attrition: The Super War Card Game!
-//     </h1>
-//     <h2 style={{ display: "flex", justifyContent: "center" }}>{message}</h2>
-//     <div>
-//       <h3 style={{ margin: "10px" }}>
-//         Total Cards in Game:{" "}
-//         {playerOne.deck.length +
-//           playerOne.reserve.length +
-//           playerOne.warPile.length +
-//           playerTwo.deck.length +
-//           playerTwo.reserve.length +
-//           playerTwo.warPile.length}
-//       </h3>
-//     </div>
-//     <div
-//       style={{
-//         display: "flex",
-//         justifyContent: "center",
-//         flexDirection: "row",
-//         flexWrap: "wrap",
-//         padding: "10px",
-//       }}
-//     >
-//       <div>
-//         <h3 style={{ margin: "10px" }}>Player One Victories: {playerOneVictories}</h3>
-//         <h3 style={{ margin: "10px" }}>Player One Score: {playerOneScore}</h3>
-//         <h3 style={{ margin: "10px" }}>
-//           Player One Deck Count: {playerOne.deck.length}
-//         </h3>
-//         <h3 style={{ margin: "10px" }}>
-//           Player One Deck Reserve: {playerOne.reserve.length}
-//         </h3>
-//         <h3 style={{ margin: "10px" }}>
-//           Player One Deck War Pile: {playerOne.warPile.length}
-//         </h3>
-//       </div>
-//       <div>
-//         <h3 style={{ margin: "10px" }}>Player Two Victories: {playerTwoVictories}</h3>
-//         <h3 style={{ margin: "10px" }}>Player Two Score: {playerTwoScore}</h3>
-//         <h3 style={{ margin: "10px" }}>
-//           Player Two Deck Count: {playerTwo.deck.length}
-//         </h3>
-//         <h3 style={{ margin: "10px" }}>
-//           Player Two Deck Reserve: {playerTwo.reserve.length}
-//         </h3>
-//         <h3 style={{ margin: "10px" }}>
-//           Player Two Deck War Pile: {playerTwo.warPile.length}
-//         </h3>
-//       </div>
-//     </div>
-//     <div
-//       style={{
-//         display: "flex",
-//         justifyContent: "center",
-//         flexDirection: "row",
-//         flexWrap: "wrap",
-//       }}
-//     >
-//       <div
-//         style={{
-//           display: "flex",
-//           alignItems: "center",
-//           flexDirection: "column",
-//           border: "solid black",
-//         }}
-//       >
-//         <div style={styles.cardBox}>
-//           <h3>Player 1</h3>
-//           <div>{selected1.suit}</div>
-//           <div>{selected1.rank}</div>
-//         </div>
-//         {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
-//           <button
-//             onClick={() => refreshDeck("playerOne")}
-//             style={{ margin: "10px" }}
-//           >
-//             Fresh Deck
-//           </button>
-//         )}
-//       </div>
-
-//       <div
-//         style={{
-//           display: "flex",
-//           alignItems: "center",
-//           flexDirection: "column",
-//           border: "solid black",
-//         }}
-//       >
-//         <div style={styles.cardBox}>
-//           <h3>Player 2</h3>
-//           <div>{selected2.suit}</div>
-//           <div>{selected2.rank}</div>
-//         </div>
-//         {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
-//           <button
-//             onClick={() => refreshDeck("playerTwo")}
-//             style={{ margin: "10px" }}
-//           >
-//             Fresh Deck
-//           </button>
-//         )}
-//       </div>
-//     </div>
-
-//     <div
-//       style={{
-//         display: "flex",
-//         justifyContent: "center",
-//         marginTop: "20px",
-//       }}
-//     >
-//       {!start || war === WAR_STATES.END ? (
-//         <button onClick={startGame} style={styles.button}>
-//           {war === WAR_STATES.END ? "Start New Game" : "Play Again"}
-//         </button>
-//       ) : (
-//         warStateMap[war] && (
-//           <button
-//             onClick={warStateMap[war].handler}
-//             disabled={warStateMap[war].disabled}
-//             style={styles.button}
-//           >
-//             {warStateMap[war].label}
-//           </button>
-//         )
-//       )}
-//     </div>
-
-//     <div>
-//       <h3 style={styles.log}>Event Log</h3>
-//       <div style={styles.log}>
-//         <ul style={{ margin: 0, paddingLeft: "20px" }}>
-//           {log.map((entry, i) => (
-//             <li key={i}>{entry}</li>
-//           ))}
-//           <div ref={logEndRef} />
-//         </ul>
-//       </div>
-//     </div>

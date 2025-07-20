@@ -1,93 +1,99 @@
 .app-container {
-    font-family: sans-serif;
-    padding: 20px;
-    text-align: center;
+  font-family: sans-serif;
+  padding: 20px;
+  text-align: center;
 }
 
 .title {
-    font-size: 2rem;
-    margin-bottom:10px;
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
 .message {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    color: #444;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #444;
 }
 
 .scoreboard {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
 }
 
 .players-info {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .player-info {
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 8px;
-    width: 250px;
-    background: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+  width: 250px;
+  background: #f9f9f9;
 }
 
 .card {
-    margin: 10px auto;
-    padding: 20px;
-    background: white;
-    border: 2px solid black;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    font-weight: bold;
+  margin: 10px auto;
+  padding: 20px;
+  width: 100px;
+  height: 140px;
+  background: white;
+  border: 2px solid black;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .stats p {
-    margin: 4px 0;
+  margin: 4px 0;
 }
 
 .center-controls {
-    margin: 20px 0;
+  margin: 20px 0;
 }
 
 .center-controls button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 6px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    cursor: pointer;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 .log-section {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 .log-box {
-    max-height: 150px;
-    overflow-y: auto;
-    text-align: left;
-    padding: 10px;
-    background: #f1f1f1;
-    border-radius: 8px;
-    width: 80%;
-    margin: 0 auto;
+  max-height: 150px;
+  overflow-y: auto;
+  text-align: left;
+  padding: 10px;
+  background: #f1f1f1;
+  border-radius: 8px;
+  width: 80%;
+  margin: 0 auto;
 }
 
 .log-box ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 
 .log-box li {
-    font-family: monospace;
-    font-size: 0.85rem;
-    margin-bottom: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
 }
