@@ -1,11 +1,11 @@
 :root {
-  --dark-base: #1e1a1e;      /* main background */
-  --dark-deep: #121013;      /* darker contrast */
-  --accent-muted: #4b4452;   /* borders/buttons */
-  --darkest: #0a080a;        /* blackest element */
-  --panel-bg: #2e2a32;       /* log + info panels */
-  --text-light: #e0e0e0;     /* light text */
-  --highlight: #4caf50;      /* accent (keep or replace) */
+  --dark-base: #1e1a1e; /* main background */
+  --dark-deep: #121013; /* darker contrast */
+  --accent-muted: #5c5466; /* borders/buttons */
+  --darkest: #0b0a0b; /* blackest element */
+  --panel-bg: #3a3442; /* log + info panels */
+  --text-light: #f0f0f0; /* light text */
+  --highlight: #57a05c; /* accent (keep or replace) */
 }
 
 .app-container {
@@ -58,6 +58,59 @@
   color: var(--text-light);
 }
 
+button {
+  background-color: var(--highlight);
+  color: white;
+   border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+button:hover {
+  background-color: #57a05c; /* Slightly darker or complementary */
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--highlight); /* Material Design green */
+  outline-offset: 3px;
+}
+
+/* .player-info button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  background-color: var(--highlight);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.player-info button:hover {
+  background-color: #57a05c;
+} */
+
 .card {
   margin: 10px auto;
   padding: 20px;
@@ -70,7 +123,8 @@
   border-radius: 10px;
   font-size: 1.2rem;
   font-weight: bold;
-  /* new */ color: var(--text-light);
+  /* new */
+  color: var(--text-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,11 +135,11 @@
   margin: 4px 0;
 }
 
-.center-controls {
+.game-controls {
   margin: 20px 0;
 }
 
-.center-controls button {
+/* .game-controls button {
   padding: 10px 20px;
   font-size: 1rem;
   border-radius: 6px;
@@ -93,7 +147,11 @@
   color: white;
   border: none;
   cursor: pointer;
-}
+} */
+
+/* .game-controls button:hover {
+  background-color: #57a05c;
+} */
 
 .log-section {
   margin-top: 30px;
@@ -104,7 +162,7 @@
 }
 
 .log-controls-container {
-  display: flex; 
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
@@ -119,11 +177,12 @@
 }
 
 .log-button-line {
- position: absolute;
+  position: absolute;
   width: 12px;
   height: 2px;
   /* background-color: black; */
-  /* new */background-color: var(--text-light);
+  /* new */
+  background-color: var(--text-light);
   top: 50%;
   transform-origin: center;
   transition: transform 0.3s ease;
@@ -131,13 +190,13 @@
 
 .left {
   left: 30%;
-  transform: translate(-50%, -50%) rotate(-45deg)
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .right {
   left: 70%;
-   transform: translate(-50%, -50%) rotate(45deg);
-} 
+  transform: translate(-50%, -50%) rotate(45deg);
+}
 
 .log-button.open .left {
   transform: translate(-50%, -50%) rotate(45deg);
@@ -153,13 +212,16 @@
   text-align: left;
   padding: 10px;
   /* background: #f1f1f1; */
-  /* new */background: var(--panel-bg);
+  /* new */
+  background: var(--panel-bg);
   border-radius: 8px;
   /* border: solid black; */
-  /* new */border: 1px solid var(--accent-muted);
+  /* new */
+  border: 1px solid var(--accent-muted);
   width: 100%;
   box-sizing: border-box;
-  /* new */color: var(--text-light);
+  /* new */
+  color: var(--text-light);
 }
 
 .log-box ul {
