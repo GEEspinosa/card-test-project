@@ -1,18 +1,35 @@
+:root {
+  --dark-base: #1e1a1e;      /* main background */
+  --dark-deep: #121013;      /* darker contrast */
+  --accent-muted: #4b4452;   /* borders/buttons */
+  --darkest: #0a080a;        /* blackest element */
+  --panel-bg: #2e2a32;       /* log + info panels */
+  --text-light: #e0e0e0;     /* light text */
+  --highlight: #4caf50;      /* accent (keep or replace) */
+}
+
 .app-container {
   font-family: sans-serif;
   padding: 20px;
   text-align: center;
+  /* new */
+  background-color: var(--dark-base);
+  color: var(--text-light);
 }
 
 .title {
   font-size: 2rem;
   margin-bottom: 10px;
+  /* new */
+  color: var(--text-light);
 }
 
 .message {
   font-size: 1.2rem;
   margin-bottom: 20px;
-  color: #444;
+  /* color: #444; */
+  /* new */
+  color: var(--text-light);
 }
 
 .scoreboard {
@@ -30,11 +47,15 @@
 }
 
 .player-info {
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
+  border: 1px solid var(--accent-muted);
   padding: 10px;
   border-radius: 8px;
   width: 250px;
-  background: #f9f9f9;
+  /* background: #f9f9f9; */
+  /* new */
+  background: var(--panel-bg);
+  color: var(--text-light);
 }
 
 .card {
@@ -42,11 +63,14 @@
   padding: 20px;
   width: 100px;
   height: 140px;
-  background: white;
-  border: 2px solid black;
+  /* background: white;
+  border: 2px solid black; */
+  background: var(--dark-deep);
+  border: 2px solid var(--accent-muted);
   border-radius: 10px;
   font-size: 1.2rem;
   font-weight: bold;
+  /* new */ color: var(--text-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,7 +89,7 @@
   padding: 10px 20px;
   font-size: 1rem;
   border-radius: 6px;
-  background-color: #4caf50;
+  background-color: var(--highlight);
   color: white;
   border: none;
   cursor: pointer;
@@ -73,7 +97,6 @@
 
 .log-section {
   margin-top: 30px;
-  /* border: solid black; */
   padding: 10px;
   width: 80%;
   margin-left: auto;
@@ -92,16 +115,15 @@
   width: 20px;
   height: 20px;
   position: relative;
-  /* left: 80%; */
   cursor: pointer;
-  /* border: solid black; */
 }
 
 .log-button-line {
  position: absolute;
   width: 12px;
   height: 2px;
-  background-color: black;
+  /* background-color: black; */
+  /* new */background-color: var(--text-light);
   top: 50%;
   transform-origin: center;
   transition: transform 0.3s ease;
@@ -130,12 +152,14 @@
   overflow-y: auto;
   text-align: left;
   padding: 10px;
-  background: #f1f1f1;
+  /* background: #f1f1f1; */
+  /* new */background: var(--panel-bg);
   border-radius: 8px;
-  border: solid black;
+  /* border: solid black; */
+  /* new */border: 1px solid var(--accent-muted);
   width: 100%;
   box-sizing: border-box;
-  /* margin: 0 auto; */
+  /* new */color: var(--text-light);
 }
 
 .log-box ul {
