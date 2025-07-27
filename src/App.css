@@ -73,6 +73,43 @@
 
 .log-section {
   margin-top: 30px;
+  border: solid black;
+}
+
+.log-button {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  cursor: pointer;
+}
+
+.log-button-line {
+ position: absolute;
+  margin: 10px;
+  width: 20px;
+  height: 2px;
+  background-color: black;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  /* border-radius: 2px; */
+  transition: transform 0.3s ease;
+}
+
+.left {
+  transform: translate(-50%, -50%) rotate(45deg)
+}
+
+.right {
+   transform: translate(-50%, -50%) rotate(-45deg);
+} 
+
+.log-button.open .left {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.log-button.open .right {
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .log-box {
@@ -82,6 +119,7 @@
   padding: 10px;
   background: #f1f1f1;
   border-radius: 8px;
+  border: solid black;
   width: 80%;
   margin: 0 auto;
 }
