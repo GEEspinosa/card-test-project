@@ -39,7 +39,7 @@ function App() {
   let [playerTwoVictories, setPlayerTwoVictories] = useState(0);
   let [message, setMessage] = useState("...waiting for card draw");
   let [log, setLog] = useState([]);
-  let [logOpen, setLogOpen] = useState(true)
+  let [logOpen, setLogOpen] = useState(true);
 
   const logEndRef = useRef(null);
 
@@ -469,8 +469,8 @@ function App() {
     );
   }
 
-  function logButtonHandler () {
-    setLogOpen((prev) => !prev)
+  function logButtonHandler() {
+    setLogOpen((prev) => !prev);
   }
 
   const warStateMap = {
@@ -598,18 +598,23 @@ function App() {
 
       <div className="log-section">
         <h3>Event Log</h3>
-        <div className={`log-button ${logOpen ? "open" : ""}`} onClick = {logButtonHandler}>
+        <div
+          className={`log-button ${logOpen ? "open" : ""}`}
+          onClick={logButtonHandler}
+        >
           <div className="log-button-line left"></div>
           <div className="log-button-line right"></div>
         </div>
-        {logOpen && (<div className="log-box">
-          <ul>
-            {log.map((entry, i) => (
-              <li key={i}>{entry}</li>
-            ))}
-            <div ref={logEndRef} />
-          </ul>
-        </div>)}
+        {logOpen && (
+          <div className="log-box">
+            <ul>
+              {log.map((entry, i) => (
+                <li key={i}>{entry}</li>
+              ))}
+              <div ref={logEndRef} />
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
