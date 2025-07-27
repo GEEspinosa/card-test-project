@@ -598,23 +598,25 @@ function App() {
 
       <div className="log-section">
         <h3>Event Log</h3>
-        <div
-          className={`log-button ${logOpen ? "open" : ""}`}
-          onClick={logButtonHandler}
-        >
-          <div className="log-button-line left"></div>
-          <div className="log-button-line right"></div>
-        </div>
-        {logOpen && (
-          <div className="log-box">
-            <ul>
-              {log.map((entry, i) => (
-                <li key={i}>{entry}</li>
-              ))}
-              <div ref={logEndRef} />
-            </ul>
+        <div className="log-controls-container">
+          <div
+            className={`log-button ${logOpen ? "open" : ""}`}
+            onClick={logButtonHandler}
+          >
+            <div className="log-button-line left"></div>
+            <div className="log-button-line right"></div>
           </div>
-        )}
+          {logOpen && (
+            <div className="log-box">
+              <ul>
+                {log.map((entry, i) => (
+                  <li key={i}>{entry}</li>
+                ))}
+                <div ref={logEndRef} />
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
