@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import "./App.css";
 import { SUITS, RANKS, RANK_VALUES } from "./assets/card-data";
 
@@ -42,13 +42,12 @@ function App() {
   let [logOpen, setLogOpen] = useState(true);
 
   useEffect(() => {
-  console.log("Player One Victories changed:", playerOneVictories);
-}, [playerOneVictories]);
+    console.log("Player One Victories changed:", playerOneVictories);
+  }, [playerOneVictories]);
 
-useEffect(() => {
-  console.log("Player Two Victories changed:", playerTwoVictories);
-}, [playerTwoVictories]);
-
+  useEffect(() => {
+    console.log("Player Two Victories changed:", playerTwoVictories);
+  }, [playerTwoVictories]);
 
   const logEndRef = useRef(null);
 
@@ -71,26 +70,29 @@ useEffect(() => {
     return newDeck;
   }
 
-  function canRefreshDeck(player) {
-    const hasReserve = player.reserve.length > 0;
-    const isInWar = war === WAR_STATES.PENDING;
+  const canRefreshDeck = useCallback(
+    (player) => {
+      const hasReserve = player.reserve.length > 0;
+      const isInWar = war === WAR_STATES.PENDING;
 
-    if (!start) {
-      return false;
-    }
+      if (!start) {
+        return false;
+      }
 
-    if (!isInWar) {
-      return player.deck.length === 0 && hasReserve;
-    }
+      if (!isInWar) {
+        return player.deck.length === 0 && hasReserve;
+      }
 
-    const totalCards = player.deck.length + player.reserve.length;
-    return (
-      player.deck.length < 3 &&
-      totalCards >= 3 &&
-      player.deck.length < totalCards &&
-      war === WAR_STATES.PENDING
-    );
-  }
+      const totalCards = player.deck.length + player.reserve.length;
+      return (
+        player.deck.length < 3 &&
+        totalCards >= 3 &&
+        player.deck.length < totalCards &&
+        war === WAR_STATES.PENDING
+      );
+    },
+    [war, start]
+  );
 
   function needsRefresh(player) {
     return player.deck.length === 0 && player.reserve.length > 0;
@@ -136,57 +138,7 @@ useEffect(() => {
 
   const gameOverHandled = useRef(false);
 
-  // function checkGameOver() {
-  //   if (!start) return;
-
-  //   const cardsPlayed =
-  //     52 -
-  //     (playerOne.deck.length +
-  //       playerOne.reserve.length +
-  //       playerTwo.deck.length +
-  //       playerTwo.reserve.length);
-  //   if (cardsPlayed === 0) return;
-  //   if (gameOverHandled.current) return;
-
-  //   const p1Total =
-  //     playerOne.deck.length +
-  //     playerOne.reserve.length +
-  //     playerOne.warPile.length;
-  //   const p2Total =
-  //     playerTwo.deck.length +
-  //     playerTwo.reserve.length +
-  //     playerTwo.warPile.length;
-
-  //   const noCardsHaveBeenPlayed = p1Total + p2Total === 52;
-  //   if (noCardsHaveBeenPlayed) return;
-
-  //   //const bothOut = p1Total === 0 && p2Total === 0;
-  //   const p1Out = p1Total === 0 && p2Total > 0;
-  //   const p2Out = p2Total === 0 && p1Total > 0;
-
-  //   if ( p1Out || p2Out) {
-  //     if (gameOverHandled.current) return;
-  //     gameOverHandled.current = true;
-
-  //     setWar(WAR_STATES.END);
-
-  //     // if (bothOut) {
-  //     //   setMessage(`Tie! Final Score: ${playerOneScore} to ${playerTwoScore}`);
-  //     // } else if (p1Out) {
-  //     //   setMessage(
-  //     //     `Player Two Wins! Final Score: ${playerTwoScore} to ${playerOneScore}`
-  //     //   );
-  //     //   // setPlayerTwoVictories((prev) => prev + 1);
-  //     // } else {
-  //     //   setMessage(
-  //     //     `Player One Wins! Final Score: ${playerOneScore} to ${playerTwoScore}`
-  //     //   );
-  //     //   setPlayerOneVictories((prev) => prev + 1);
-  //     // }
-  //   }
-  // }
-
-  function resetGameState() {
+  const resetGameState = useCallback(() => {
     let deck = buildDeck();
     deck = shuffleDeck(deck);
     const { p1, p2 } = splitDeck(deck);
@@ -210,14 +162,109 @@ useEffect(() => {
     setLog([]);
     //setHasStartedPlaying(false);
     gameOverHandled.current = false;
-  }
+  }, []);
 
-  function startGame() {
+  const startGame = useCallback(() => {
     resetGameState();
     setStart(true);
-  }
+  }, [resetGameState]);
 
-  function drawCard() {
+   const awardToPlayerOne = useCallback((card1, card2) => {
+    if (war === WAR_STATES.END) return;
+
+    setPlayerOneScore((prev) => prev + 1);
+
+    const warPile1 = playerOne.warPile;
+    const warPile2 = playerTwo.warPile;
+
+    setPlayerOne((prev) => ({
+      ...prev,
+      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
+      warPile: [],
+    }));
+    setPlayerTwo((prev) => ({
+      ...prev,
+      warPile: [],
+    }));
+
+    if (war === WAR_STATES.PENDING) {
+      setSelected1({ suit: "draw", rank: "card" });
+      setSelected2({ suit: "draw", rank: "card" });
+    }
+    if (war === WAR_STATES.FILLED) {
+      setWar(WAR_STATES.RESOLVED);
+    }
+    setMessage("Player 1 Wins");
+  }, [playerOne.warPile, playerTwo.warPile, war])
+
+  const awardToPlayerTwo = useCallback ((card1, card2) => {
+    if (war === WAR_STATES.END) return;
+
+    setPlayerTwoScore((prev) => prev + 1);
+
+    const warPile1 = playerOne.warPile;
+    const warPile2 = playerTwo.warPile;
+
+    setPlayerTwo((prev) => ({
+      ...prev,
+      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
+      warPile: [],
+    }));
+    setPlayerOne((prev) => ({
+      ...prev,
+      warPile: [],
+    }));
+
+    if (war === WAR_STATES.PENDING) {
+      setSelected1({ suit: "draw", rank: "card" });
+      setSelected2({ suit: "draw", rank: "card" });
+    }
+    if (war === WAR_STATES.FILLED) {
+      setWar(WAR_STATES.RESOLVED);
+    }
+    setMessage("Player 2 Wins");
+  }, [playerOne.warPile, playerTwo.warPile, war])
+
+  const handleCardComparison = useCallback(
+    (card1, card2) => {
+      if (war === WAR_STATES.END) return;
+
+      if (!card1 || !card2) {
+        return;
+      }
+      let result = getWinner(card1, card2);
+
+      const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`;
+
+      if (result === "playerOne") {
+        logEvent(`${playSummary} -> Player One Wins!`);
+        awardToPlayerOne(card1, card2);
+      } else if (result === "playerTwo") {
+        logEvent(`${playSummary} -> Player Two Wins!`);
+        awardToPlayerTwo(card1, card2);
+      } else {
+        logEvent(`${playSummary} -> WAR!`);
+        setPlayerOne((prev) => ({
+          ...prev,
+          warPile: [...prev.warPile, card1],
+        }));
+        setPlayerTwo((prev) => ({
+          ...prev,
+          warPile: [...prev.warPile, card2],
+        }));
+
+        if (war === WAR_STATES.FILLED) {
+          setMessage("Another War!!! Fill more piles");
+        } else {
+          setMessage("War!!! Fill war piles");
+        }
+        setWar(WAR_STATES.PENDING);
+      }
+    },
+    [awardToPlayerOne, awardToPlayerTwo, war]
+  );
+
+  const drawCard = useCallback(() => {
     if (war === WAR_STATES.END) {
       return;
     }
@@ -268,7 +315,16 @@ useEffect(() => {
     //setHasStartedPlaying(true);
 
     handleCardComparison(drawnCard1, drawnCard2);
-  }
+  }, [
+    handleCardComparison,
+    playerOne.deck,
+    playerOne.reserve.length,
+    playerOneVictories,
+    playerTwo.deck,
+    playerTwo.reserve.length,
+    playerTwoVictories,
+    war,
+  ]);
 
   function getWinner(card1, card2) {
     const value1 = RANK_VALUES[card1.rank];
@@ -282,63 +338,7 @@ useEffect(() => {
     return "WAR!";
   }
 
-  function awardToPlayerOne(card1, card2) {
-    if (war === WAR_STATES.END) return;
-
-    setPlayerOneScore((prev) => prev + 1);
-
-    const warPile1 = playerOne.warPile;
-    const warPile2 = playerTwo.warPile;
-
-    setPlayerOne((prev) => ({
-      ...prev,
-      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
-      warPile: [],
-    }));
-    setPlayerTwo((prev) => ({
-      ...prev,
-      warPile: [],
-    }));
-
-    if (war === WAR_STATES.PENDING) {
-      setSelected1({ suit: "draw", rank: "card" });
-      setSelected2({ suit: "draw", rank: "card" });
-    }
-    if (war === WAR_STATES.FILLED) {
-      setWar(WAR_STATES.RESOLVED);
-    }
-    setMessage("Player 1 Wins");
-  }
-
-  function awardToPlayerTwo(card1, card2) {
-    if (war === WAR_STATES.END) return;
-
-    setPlayerTwoScore((prev) => prev + 1);
-
-    const warPile1 = playerOne.warPile;
-    const warPile2 = playerTwo.warPile;
-
-    setPlayerTwo((prev) => ({
-      ...prev,
-      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
-      warPile: [],
-    }));
-    setPlayerOne((prev) => ({
-      ...prev,
-      warPile: [],
-    }));
-
-    if (war === WAR_STATES.PENDING) {
-      setSelected1({ suit: "draw", rank: "card" });
-      setSelected2({ suit: "draw", rank: "card" });
-    }
-    if (war === WAR_STATES.FILLED) {
-      setWar(WAR_STATES.RESOLVED);
-    }
-    setMessage("Player 2 Wins");
-  }
-
-  function prepareDeckForWar(deck, reserve) {
+  const prepareDeckForWar = useCallback((deck, reserve) => {
     if (deck.length >= 3) {
       return { deck: [...deck], reserve: [...reserve] };
     }
@@ -347,9 +347,9 @@ useEffect(() => {
       deck: [...shuffleDeck(reserve), ...deck],
       reserve: [],
     };
-  }
+  }, []);
 
-  function fillWarPiles() {
+  const fillWarPiles = useCallback(() => {
     const p1Total = playerOne.deck.length + playerOne.reserve.length;
     const p2Total = playerTwo.deck.length + playerTwo.reserve.length;
 
@@ -371,7 +371,7 @@ useEffect(() => {
     // If ONLY player two can't continue
     if (p2Total < 3) {
       setMessage("Player Two can't continue. Player One wins!");
-      setPlayerOneVictories((prev) => prev + 1)
+      setPlayerOneVictories((prev) => prev + 1);
       setWar(WAR_STATES.END);
       return;
     }
@@ -417,7 +417,7 @@ useEffect(() => {
 
     setWar(WAR_STATES.FILLED);
     setMessage("War piles filled! Draw Again to resolve war.");
-  }
+  }, [canRefreshDeck, playerOne, playerTwo, prepareDeckForWar]);
 
   function refreshDeck(playerKey) {
     if (war === WAR_STATES.END) return;
@@ -436,43 +436,8 @@ useEffect(() => {
     }));
   }
 
-  function handleCardComparison(card1, card2) {
-    if (war === WAR_STATES.END) return;
 
-    if (!card1 || !card2) {
-      return;
-    }
-    let result = getWinner(card1, card2);
-
-    const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`;
-
-    if (result === "playerOne") {
-      logEvent(`${playSummary} -> Player One Wins!`);
-      awardToPlayerOne(card1, card2);
-    } else if (result === "playerTwo") {
-      logEvent(`${playSummary} -> Player Two Wins!`);
-      awardToPlayerTwo(card1, card2);
-    } else {
-      logEvent(`${playSummary} -> WAR!`);
-      setPlayerOne((prev) => ({
-        ...prev,
-        warPile: [...prev.warPile, card1],
-      }));
-      setPlayerTwo((prev) => ({
-        ...prev,
-        warPile: [...prev.warPile, card2],
-      }));
-
-      if (war === WAR_STATES.FILLED) {
-        setMessage("Another War!!! Fill more piles");
-      } else {
-        setMessage("War!!! Fill war piles");
-      }
-      setWar(WAR_STATES.PENDING);
-    }
-  }
-
-  function handleContinue() {
+  const handleContinue = useCallback (() => {
     setWar(WAR_STATES.NONE);
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
@@ -488,7 +453,7 @@ useEffect(() => {
 
     setWar(WAR_STATES.NONE);
     setMessage("...waiting for card draw");
-  }
+  }, [playerOne, playerTwo])
 
   function hasNoCards(player) {
     return (
@@ -502,58 +467,73 @@ useEffect(() => {
     setLogOpen((prev) => !prev);
   }
 
-  const warStateMap = {
-    [WAR_STATES.NONE]: {
-      handler: drawCard,
-      label:
-        canRefreshDeck(playerOne) || canRefreshDeck(playerTwo)
-          ? "Refresh Deck(s) First"
-          : "Draw",
-      disabled:
-        !canDraw || canRefreshDeck(playerOne) || canRefreshDeck(playerTwo),
-    },
-    [WAR_STATES.PENDING]: {
-      handler: fillWarPiles,
-      label: !canRefillWarPile
-        ? "Can't Fill War Piles (Click to End)"
-        : "Fill War Piles",
-      disabled: false,
-    },
-    [WAR_STATES.FILLED]: {
-      handler: drawCard,
-      label: "Resolve War",
-      disabled: !canDraw,
-    },
-    [WAR_STATES.RESOLVED]: {
-      handler: () => {
-        if (hasNoCards(playerOne) || hasNoCards(playerTwo)) {
-          return;
-        } else {
-          handleContinue();
-          return;
-        }
+  const warStateMap = useMemo(
+    () => ({
+      [WAR_STATES.NONE]: {
+        handler: drawCard,
+        label:
+          canRefreshDeck(playerOne) || canRefreshDeck(playerTwo)
+            ? "Refresh Deck(s) First"
+            : "Draw",
+        disabled:
+          !canDraw || canRefreshDeck(playerOne) || canRefreshDeck(playerTwo),
       },
-      label: "Continue",
-      disabled: false,
-    },
-    [WAR_STATES.END]: {
-      handler: startGame,
-      label: "New Game",
-      disabled: false,
-    },
-  };
+      [WAR_STATES.PENDING]: {
+        handler: fillWarPiles,
+        label: !canRefillWarPile
+          ? "Can't Fill War Piles (Click to End)"
+          : "Fill War Piles",
+        disabled: false,
+      },
+      [WAR_STATES.FILLED]: {
+        handler: drawCard,
+        label: "Resolve War",
+        disabled: !canDraw,
+      },
+      [WAR_STATES.RESOLVED]: {
+        handler: () => {
+          if (hasNoCards(playerOne) || hasNoCards(playerTwo)) {
+            return;
+          } else {
+            handleContinue();
+            return;
+          }
+        },
+        label: "Continue",
+        disabled: false,
+      },
+      [WAR_STATES.END]: {
+        handler: startGame,
+        label: "New Game",
+        disabled: false,
+      },
+    }),
+    [
+      canDraw,
+      canRefillWarPile,
+      canRefreshDeck,
+      drawCard,
+      fillWarPiles,
+      handleContinue,
+      playerOne,
+      playerTwo,
+      startGame,
+    ]
+  );
 
-  // useEffect(() => {
-  //   checkGameOver();
-  // }, [
-  //   playerOne.deck,
-  //   playerOne.reserve,
-  //   playerOne.warPile,
-  //   playerTwo.deck,
-  //   playerTwo.reserve,
-  //   playerTwo.warPile,
-  //   war,
-  // ]);
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.code === "Space") {
+        event.preventDefault();
+        warStateMap[war].handler();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [warStateMap, war]);
 
   useEffect(() => {
     if (logEndRef.current) {
