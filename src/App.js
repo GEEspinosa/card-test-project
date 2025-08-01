@@ -41,6 +41,15 @@ function App() {
   let [log, setLog] = useState([]);
   let [logOpen, setLogOpen] = useState(true);
 
+  useEffect(() => {
+  console.log("Player One Victories changed:", playerOneVictories);
+}, [playerOneVictories]);
+
+useEffect(() => {
+  console.log("Player Two Victories changed:", playerTwoVictories);
+}, [playerTwoVictories]);
+
+
   const logEndRef = useRef(null);
 
   function buildDeck() {
@@ -127,55 +136,55 @@ function App() {
 
   const gameOverHandled = useRef(false);
 
-  function checkGameOver() {
-    if (!start) return;
+  // function checkGameOver() {
+  //   if (!start) return;
 
-    const cardsPlayed =
-      52 -
-      (playerOne.deck.length +
-        playerOne.reserve.length +
-        playerTwo.deck.length +
-        playerTwo.reserve.length);
-    if (cardsPlayed === 0) return;
-    if (gameOverHandled.current) return;
+  //   const cardsPlayed =
+  //     52 -
+  //     (playerOne.deck.length +
+  //       playerOne.reserve.length +
+  //       playerTwo.deck.length +
+  //       playerTwo.reserve.length);
+  //   if (cardsPlayed === 0) return;
+  //   if (gameOverHandled.current) return;
 
-    const p1Total =
-      playerOne.deck.length +
-      playerOne.reserve.length +
-      playerOne.warPile.length;
-    const p2Total =
-      playerTwo.deck.length +
-      playerTwo.reserve.length +
-      playerTwo.warPile.length;
+  //   const p1Total =
+  //     playerOne.deck.length +
+  //     playerOne.reserve.length +
+  //     playerOne.warPile.length;
+  //   const p2Total =
+  //     playerTwo.deck.length +
+  //     playerTwo.reserve.length +
+  //     playerTwo.warPile.length;
 
-    const noCardsHaveBeenPlayed = p1Total + p2Total === 52;
-    if (noCardsHaveBeenPlayed) return;
+  //   const noCardsHaveBeenPlayed = p1Total + p2Total === 52;
+  //   if (noCardsHaveBeenPlayed) return;
 
-    const bothOut = p1Total === 0 && p2Total === 0;
-    const p1Out = p1Total === 0 && p2Total > 0;
-    const p2Out = p2Total === 0 && p1Total > 0;
+  //   //const bothOut = p1Total === 0 && p2Total === 0;
+  //   const p1Out = p1Total === 0 && p2Total > 0;
+  //   const p2Out = p2Total === 0 && p1Total > 0;
 
-    if (bothOut || p1Out || p2Out) {
-      if (gameOverHandled.current) return;
-      gameOverHandled.current = true;
+  //   if ( p1Out || p2Out) {
+  //     if (gameOverHandled.current) return;
+  //     gameOverHandled.current = true;
 
-      setWar(WAR_STATES.END);
+  //     setWar(WAR_STATES.END);
 
-      if (bothOut) {
-        setMessage(`Tie! Final Score: ${playerOneScore} to ${playerTwoScore}`);
-      } else if (p1Out) {
-        setMessage(
-          `Player Two Wins! Final Score: ${playerTwoScore} to ${playerOneScore}`
-        );
-        setPlayerTwoVictories((prev) => prev + 1);
-      } else {
-        setMessage(
-          `Player One Wins! Final Score: ${playerOneScore} to ${playerTwoScore}`
-        );
-        setPlayerOneVictories((prev) => prev + 1);
-      }
-    }
-  }
+  //     // if (bothOut) {
+  //     //   setMessage(`Tie! Final Score: ${playerOneScore} to ${playerTwoScore}`);
+  //     // } else if (p1Out) {
+  //     //   setMessage(
+  //     //     `Player Two Wins! Final Score: ${playerTwoScore} to ${playerOneScore}`
+  //     //   );
+  //     //   // setPlayerTwoVictories((prev) => prev + 1);
+  //     // } else {
+  //     //   setMessage(
+  //     //     `Player One Wins! Final Score: ${playerOneScore} to ${playerTwoScore}`
+  //     //   );
+  //     //   setPlayerOneVictories((prev) => prev + 1);
+  //     // }
+  //   }
+  // }
 
   function resetGameState() {
     let deck = buildDeck();
@@ -216,32 +225,49 @@ function App() {
       return;
     }
 
-    if (playerOne.deck.length && playerTwo.deck.length) {
-      const deckCopy1 = [...playerOne.deck];
-      const deckCopy2 = [...playerTwo.deck];
-
-      const drawnCard1 = deckCopy1.pop();
-      const drawnCard2 = deckCopy2.pop();
-
-      setPlayerOne((prev) => ({
-        ...prev,
-        deck: deckCopy1,
-      }));
-      setPlayerTwo((prev) => ({
-        ...prev,
-        deck: deckCopy2,
-      }));
-
-      setSelected1(drawnCard1);
-      setSelected2(drawnCard2);
-
-      //setHasStartedPlaying(true);
-
-      handleCardComparison(drawnCard1, drawnCard2);
-    } else {
-      setMessage("One player out of cards. Checking for winner . . .");
+    if (playerOne.deck.length === 0 && playerOne.reserve.length === 0) {
+      console.log("Incrementing Player Two Victories from", playerTwoVictories);
+      setMessage("Player One out of cards. Player Two wins!");
+      setPlayerTwoVictories((prev) => {
+        console.log("New Player Two Victories", prev + 1);
+        return prev + 1;
+      });
       setWar(WAR_STATES.END);
+      return;
     }
+
+    if (playerTwo.deck.length === 0 && playerTwo.reserve.length === 0) {
+      console.log("Incrementing Player One Victories from", playerOneVictories);
+      setMessage("Player Two out of cards. Player One wins!");
+      setPlayerOneVictories((prev) => {
+        console.log("New Player One Victories", prev + 1);
+        return prev + 1;
+      });
+      setWar(WAR_STATES.END);
+      return;
+    }
+
+    const deckCopy1 = [...playerOne.deck];
+    const deckCopy2 = [...playerTwo.deck];
+
+    const drawnCard1 = deckCopy1.pop();
+    const drawnCard2 = deckCopy2.pop();
+
+    setPlayerOne((prev) => ({
+      ...prev,
+      deck: deckCopy1,
+    }));
+    setPlayerTwo((prev) => ({
+      ...prev,
+      deck: deckCopy2,
+    }));
+
+    setSelected1(drawnCard1);
+    setSelected2(drawnCard2);
+
+    //setHasStartedPlaying(true);
+
+    handleCardComparison(drawnCard1, drawnCard2);
   }
 
   function getWinner(card1, card2) {
@@ -328,15 +354,16 @@ function App() {
     const p2Total = playerTwo.deck.length + playerTwo.reserve.length;
 
     // If BOTH players can't fill war piles
-    if (p1Total < 3 && p2Total < 3) {
-      setMessage("Not enough cards to fill war piles - game over!");
-      setWar(WAR_STATES.END);
-      return;
-    }
+    // if (p1Total < 3 && p2Total < 3) {
+    //   setMessage("Not enough cards to fill war piles - game over!");
+    //   setWar(WAR_STATES.END);
+    //   return;
+    // }
 
     // If ONLY player one can't continue
     if (p1Total < 3) {
       setMessage("Player One can't continue. Player Two wins!");
+      setPlayerTwoVictories((prev) => prev + 1);
       setWar(WAR_STATES.END);
       return;
     }
@@ -344,6 +371,7 @@ function App() {
     // If ONLY player two can't continue
     if (p2Total < 3) {
       setMessage("Player Two can't continue. Player One wins!");
+      setPlayerOneVictories((prev) => prev + 1)
       setWar(WAR_STATES.END);
       return;
     }
@@ -453,7 +481,8 @@ function App() {
     const p2Empty = hasNoCards(playerTwo);
 
     if (p1Empty || p2Empty) {
-      checkGameOver();
+      //checkGameOver();
+      setWar(WAR_STATES.END);
       return;
     }
 
@@ -514,17 +543,17 @@ function App() {
     },
   };
 
-  useEffect(() => {
-    checkGameOver();
-  }, [
-    playerOne.deck,
-    playerOne.reserve,
-    playerOne.warPile,
-    playerTwo.deck,
-    playerTwo.reserve,
-    playerTwo.warPile,
-    war,
-  ]);
+  // useEffect(() => {
+  //   checkGameOver();
+  // }, [
+  //   playerOne.deck,
+  //   playerOne.reserve,
+  //   playerOne.warPile,
+  //   playerTwo.deck,
+  //   playerTwo.reserve,
+  //   playerTwo.warPile,
+  //   war,
+  // ]);
 
   useEffect(() => {
     if (logEndRef.current) {
@@ -582,14 +611,12 @@ function App() {
         {/* Main Action Button (draw, fill war pile, resolve, continue, etc) */}
         {start && (canRefreshDeck(playerOne) || canRefreshDeck(playerTwo)) ? (
           <button
-              onClick={warStateMap[WAR_STATES.NONE].handler}
-              disabled={warStateMap[WAR_STATES.NONE].disabled}
-            >
-              {warStateMap[WAR_STATES.NONE].label}
-            </button>
-        ) :
-        
-        !start || war === WAR_STATES.END ? (
+            onClick={warStateMap[WAR_STATES.NONE].handler}
+            disabled={warStateMap[WAR_STATES.NONE].disabled}
+          >
+            {warStateMap[WAR_STATES.NONE].label}
+          </button>
+        ) : !start || war === WAR_STATES.END ? (
           <button onClick={startGame}>
             {war === WAR_STATES.END ? "Start New Game" : "Start Game"}
           </button>
