@@ -580,7 +580,16 @@ function App() {
 
       <div className="game-controls">
         {/* Main Action Button (draw, fill war pile, resolve, continue, etc) */}
-        {!start || war === WAR_STATES.END ? (
+        {start && (canRefreshDeck(playerOne) || canRefreshDeck(playerTwo)) ? (
+          <button
+              onClick={warStateMap[WAR_STATES.NONE].handler}
+              disabled={warStateMap[WAR_STATES.NONE].disabled}
+            >
+              {warStateMap[WAR_STATES.NONE].label}
+            </button>
+        ) :
+        
+        !start || war === WAR_STATES.END ? (
           <button onClick={startGame}>
             {war === WAR_STATES.END ? "Start New Game" : "Start Game"}
           </button>
