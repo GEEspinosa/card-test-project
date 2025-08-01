@@ -18,28 +18,27 @@ const WAR_STATES = {
 };
 
 function App() {
-  let [start, setStart] = useState(false);
-  //let [hasStartedPlaying, setHasStartedPlaying] = useState(false);
-  let [war, setWar] = useState(WAR_STATES.NONE);
-  let [playerOne, setPlayerOne] = useState({
+  const [start, setStart] = useState(false);
+  const [war, setWar] = useState(WAR_STATES.NONE);
+  const [playerOne, setPlayerOne] = useState({
     deck: [],
     reserve: [],
     warPile: [],
   });
-  let [playerTwo, setPlayerTwo] = useState({
+  const [playerTwo, setPlayerTwo] = useState({
     deck: [],
     reserve: [],
     warPile: [],
   });
-  let [selected1, setSelected1] = useState({ suit: "draw", rank: "card" });
-  let [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
-  let [playerOneScore, setPlayerOneScore] = useState(0);
-  let [playerTwoScore, setPlayerTwoScore] = useState(0);
-  let [playerOneVictories, setPlayerOneVictories] = useState(0);
-  let [playerTwoVictories, setPlayerTwoVictories] = useState(0);
-  let [message, setMessage] = useState("...waiting for card draw");
-  let [log, setLog] = useState([]);
-  let [logOpen, setLogOpen] = useState(true);
+  const [selected1, setSelected1] = useState({ suit: "draw", rank: "card" });
+  const [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
+  const [playerOneScore, setPlayerOneScore] = useState(0);
+  const [playerTwoScore, setPlayerTwoScore] = useState(0);
+  const [playerOneVictories, setPlayerOneVictories] = useState(0);
+  const [playerTwoVictories, setPlayerTwoVictories] = useState(0);
+  const [message, setMessage] = useState("...waiting for card draw");
+  const [log, setLog] = useState([]);
+  const [logOpen, setLogOpen] = useState(true);
 
   useEffect(() => {
     console.log("Player One Victories changed:", playerOneVictories);
