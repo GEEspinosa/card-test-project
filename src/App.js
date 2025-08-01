@@ -269,15 +269,42 @@ function App() {
     [awardToPlayerOne, awardToPlayerTwo, war]
   );
 
-  const drawCard = useCallback(() => {
-    if (war === WAR_STATES.END) {
-      return;
-    }
-    if (war === WAR_STATES.PENDING) {
-      return;
+  function hasNoCards(player) {
+    return (
+      player.deck.length === 0 &&
+      player.reserve.length === 0 &&
+      player.warPile.length === 0
+    );
+  }
+
+  function checkForVictory(p1, p2) {
+    const p1Total = p1.deck.length + p1.reserve.length + p1.warPile.length;
+    const p2Total = p2.deck.length + p2.reserve.length + p2.warPile.length;
+
+    if (p1Total === 0 && p2Total > 0) {
+      setMessage("Player One is out of cards. Player Two wins!");
+      setPlayerTwoVictories((prev) => prev + 1);
+      setWar(WAR_STATES.END);
+      return true; // indicates game ended
     }
 
-    if (playerOne.deck.length === 0 && playerOne.reserve.length === 0) {
+    if (p2Total === 0 && p1Total > 0) {
+      setMessage("Player Two is out of cards. Player One wins!");
+      setPlayerOneVictories((prev) => prev + 1);
+      setWar(WAR_STATES.END);
+      return true; // indicates game ended
+    }
+
+    return false; //game continues
+  }
+
+  const drawCard = useCallback(() => {
+    if (war === WAR_STATES.END || war === WAR_STATES.PENDING) return;
+    if (
+      playerOne.deck.length === 0 &&
+      playerOne.reserve.length === 0 &&
+      playerOne.warPile.length === 0
+    ) {
       console.log("Incrementing Player Two Victories from", playerTwoVictories);
       setMessage("Player One out of cards. Player Two wins!");
       setPlayerTwoVictories((prev) => {
@@ -288,7 +315,11 @@ function App() {
       return;
     }
 
-    if (playerTwo.deck.length === 0 && playerTwo.reserve.length === 0) {
+    if (
+      playerTwo.deck.length === 0 &&
+      playerTwo.reserve.length === 0 &&
+      playerTwo.warPile.length === 0
+    ) {
       console.log("Incrementing Player One Victories from", playerOneVictories);
       setMessage("Player Two out of cards. Player One wins!");
       setPlayerOneVictories((prev) => {
@@ -317,18 +348,18 @@ function App() {
     setSelected1(drawnCard1);
     setSelected2(drawnCard2);
 
-    //setHasStartedPlaying(true);
-
     handleCardComparison(drawnCard1, drawnCard2);
   }, [
     handleCardComparison,
-    playerOne.deck,
-    playerOne.reserve.length,
     playerOneVictories,
-    playerTwo.deck,
-    playerTwo.reserve.length,
     playerTwoVictories,
     war,
+    playerOne.deck,
+    playerOne.reserve.length,
+    playerOne.warPile.length,
+    playerTwo.deck,
+    playerTwo.reserve.length,
+    playerTwo.warPile.length,
   ]);
 
   function getWinner(card1, card2) {
@@ -355,15 +386,11 @@ function App() {
   }, []);
 
   const fillWarPiles = useCallback(() => {
+    if (checkForVictory(playerOne, playerTwo)) {
+      return; //stop further play if game ended
+    }
     const p1Total = playerOne.deck.length + playerOne.reserve.length;
     const p2Total = playerTwo.deck.length + playerTwo.reserve.length;
-
-    // If BOTH players can't fill war piles
-    // if (p1Total < 3 && p2Total < 3) {
-    //   setMessage("Not enough cards to fill war piles - game over!");
-    //   setWar(WAR_STATES.END);
-    //   return;
-    // }
 
     // If ONLY player one can't continue
     if (p1Total < 3) {
@@ -461,14 +488,6 @@ function App() {
     setWar(WAR_STATES.NONE);
     setMessage("...waiting for card draw");
   }, [playerOne, playerTwo]);
-
-  function hasNoCards(player) {
-    return (
-      player.deck.length === 0 &&
-      player.reserve.length === 0 &&
-      player.warPile.length === 0
-    );
-  }
 
   function logButtonHandler() {
     setLogOpen((prev) => !prev);
@@ -594,8 +613,6 @@ function App() {
     playerTwo.length,
     playerTwo.reserve.length,
     startGame,
-    playerOne.reserve.lengh,
-    playerTwo.reserve.lengh,
   ]);
 
   useEffect(() => {
