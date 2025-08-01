@@ -168,61 +168,67 @@ function App() {
     setStart(true);
   }, [resetGameState]);
 
-   const awardToPlayerOne = useCallback((card1, card2) => {
-    if (war === WAR_STATES.END) return;
+  const awardToPlayerOne = useCallback(
+    (card1, card2) => {
+      if (war === WAR_STATES.END) return;
 
-    setPlayerOneScore((prev) => prev + 1);
+      setPlayerOneScore((prev) => prev + 1);
 
-    const warPile1 = playerOne.warPile;
-    const warPile2 = playerTwo.warPile;
+      const warPile1 = playerOne.warPile;
+      const warPile2 = playerTwo.warPile;
 
-    setPlayerOne((prev) => ({
-      ...prev,
-      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
-      warPile: [],
-    }));
-    setPlayerTwo((prev) => ({
-      ...prev,
-      warPile: [],
-    }));
+      setPlayerOne((prev) => ({
+        ...prev,
+        reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
+        warPile: [],
+      }));
+      setPlayerTwo((prev) => ({
+        ...prev,
+        warPile: [],
+      }));
 
-    if (war === WAR_STATES.PENDING) {
-      setSelected1({ suit: "draw", rank: "card" });
-      setSelected2({ suit: "draw", rank: "card" });
-    }
-    if (war === WAR_STATES.FILLED) {
-      setWar(WAR_STATES.RESOLVED);
-    }
-    setMessage("Player 1 Wins");
-  }, [playerOne.warPile, playerTwo.warPile, war])
+      if (war === WAR_STATES.PENDING) {
+        setSelected1({ suit: "draw", rank: "card" });
+        setSelected2({ suit: "draw", rank: "card" });
+      }
+      if (war === WAR_STATES.FILLED) {
+        setWar(WAR_STATES.RESOLVED);
+      }
+      setMessage("Player 1 Wins");
+    },
+    [playerOne.warPile, playerTwo.warPile, war]
+  );
 
-  const awardToPlayerTwo = useCallback ((card1, card2) => {
-    if (war === WAR_STATES.END) return;
+  const awardToPlayerTwo = useCallback(
+    (card1, card2) => {
+      if (war === WAR_STATES.END) return;
 
-    setPlayerTwoScore((prev) => prev + 1);
+      setPlayerTwoScore((prev) => prev + 1);
 
-    const warPile1 = playerOne.warPile;
-    const warPile2 = playerTwo.warPile;
+      const warPile1 = playerOne.warPile;
+      const warPile2 = playerTwo.warPile;
 
-    setPlayerTwo((prev) => ({
-      ...prev,
-      reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
-      warPile: [],
-    }));
-    setPlayerOne((prev) => ({
-      ...prev,
-      warPile: [],
-    }));
+      setPlayerTwo((prev) => ({
+        ...prev,
+        reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
+        warPile: [],
+      }));
+      setPlayerOne((prev) => ({
+        ...prev,
+        warPile: [],
+      }));
 
-    if (war === WAR_STATES.PENDING) {
-      setSelected1({ suit: "draw", rank: "card" });
-      setSelected2({ suit: "draw", rank: "card" });
-    }
-    if (war === WAR_STATES.FILLED) {
-      setWar(WAR_STATES.RESOLVED);
-    }
-    setMessage("Player 2 Wins");
-  }, [playerOne.warPile, playerTwo.warPile, war])
+      if (war === WAR_STATES.PENDING) {
+        setSelected1({ suit: "draw", rank: "card" });
+        setSelected2({ suit: "draw", rank: "card" });
+      }
+      if (war === WAR_STATES.FILLED) {
+        setWar(WAR_STATES.RESOLVED);
+      }
+      setMessage("Player 2 Wins");
+    },
+    [playerOne.warPile, playerTwo.warPile, war]
+  );
 
   const handleCardComparison = useCallback(
     (card1, card2) => {
@@ -418,24 +424,27 @@ function App() {
     setMessage("War piles filled! Draw Again to resolve war.");
   }, [canRefreshDeck, playerOne, playerTwo, prepareDeckForWar]);
 
-  function refreshDeck(playerKey) {
-    if (war === WAR_STATES.END) return;
+  const refreshDeck = useCallback(
+    (playerKey) => {
+      if (war === WAR_STATES.END) return;
 
-    const currentPlayer = playerKey === "playerOne" ? playerOne : playerTwo;
-    let { deck, reserve } = currentPlayer;
-    const shuffled = shuffleDeck(reserve);
-    const newDeck = [...shuffled, ...deck];
+      const currentPlayer = playerKey === "playerOne" ? playerOne : playerTwo;
+      let { deck, reserve } = currentPlayer;
+      const shuffled = shuffleDeck(reserve);
+      const newDeck = [...shuffled, ...deck];
 
-    let setter = playerKey === "playerOne" ? setPlayerOne : setPlayerTwo;
+      let setter = playerKey === "playerOne" ? setPlayerOne : setPlayerTwo;
 
-    setter((prev) => ({
-      ...prev,
-      deck: newDeck,
-      reserve: [],
-    }));
-  }
+      setter((prev) => ({
+        ...prev,
+        deck: newDeck,
+        reserve: [],
+      }));
+    },
+    [playerOne, playerTwo, war]
+  );
 
-  const handleContinue = useCallback (() => {
+  const handleContinue = useCallback(() => {
     setWar(WAR_STATES.NONE);
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
@@ -451,7 +460,7 @@ function App() {
 
     setWar(WAR_STATES.NONE);
     setMessage("...waiting for card draw");
-  }, [playerOne, playerTwo])
+  }, [playerOne, playerTwo]);
 
   function hasNoCards(player) {
     return (
@@ -521,13 +530,53 @@ function App() {
 
   useEffect(() => {
     function handleKeyDown(event) {
+      console.log(event.code);
+
+      const hasGameStarted =
+        playerOne.deck.length > 0 && playerTwo.deck.length > 0;
+
+      const playerOneNeedsRefill =
+        (playerOne.deck.length === 0 && playerOne.reserve.length > 0) ||
+        (war === WAR_STATES.PENDING &&
+          playerOne.deck.length < 3 &&
+          playerOne.reserve.length > 0);
+
+      const playerTwoNeedsRefill =
+        (playerTwo.deck.length === 0 && playerTwo.reserve.length > 0) ||
+        (war === WAR_STATES.PENDING &&
+          playerTwo.deck.length < 3 &&
+          playerTwo.reserve.length > 0);
+
+      const anyPlayerNeedsRefill = playerOneNeedsRefill || playerTwoNeedsRefill;
+
+      const currentState = warStateMap[war];
+
       if (event.code === "Space") {
         event.preventDefault();
-        const currentState = warStateMap[war]
-        if (!currentState.disabled) {
+
+        if (!hasGameStarted && !anyPlayerNeedsRefill) {
+          startGame(); // your custom function
+          return;
+        }
+
+        if (!anyPlayerNeedsRefill && currentState && !currentState.disabled) {
           warStateMap[war].handler();
         }
-        
+      }
+      if (event.code === "Digit1") {
+        event.preventDefault();
+
+        if (playerOneNeedsRefill) {
+          refreshDeck("playerOne");
+        }
+      }
+
+      if (event.code === "Digit2") {
+        event.preventDefault();
+
+        if (playerTwoNeedsRefill) {
+          refreshDeck("playerTwo");
+        }
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -535,7 +584,19 @@ function App() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [warStateMap, war]);
+  }, [
+    warStateMap,
+    war,
+    refreshDeck,
+    playerOne.deck.length,
+    playerOne.reserve.length,
+    playerTwo.deck.length,
+    playerTwo.length,
+    playerTwo.reserve.length,
+    startGame,
+    playerOne.reserve.lengh,
+    playerTwo.reserve.lengh,
+  ]);
 
   useEffect(() => {
     if (logEndRef.current) {
