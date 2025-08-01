@@ -436,7 +436,6 @@ function App() {
     }));
   }
 
-
   const handleContinue = useCallback (() => {
     setWar(WAR_STATES.NONE);
     setSelected1({ suit: "draw", rank: "card" });
@@ -525,7 +524,11 @@ function App() {
     function handleKeyDown(event) {
       if (event.code === "Space") {
         event.preventDefault();
-        warStateMap[war].handler();
+        const currentState = warStateMap[war]
+        if (!currentState.disabled) {
+          warStateMap[war].handler();
+        }
+        
       }
     }
     window.addEventListener("keydown", handleKeyDown);
