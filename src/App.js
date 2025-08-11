@@ -19,6 +19,7 @@ const WAR_STATES = {
 
 function App() {
   const [start, setStart] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
   const [war, setWar] = useState(WAR_STATES.NONE);
   const [playerOne, setPlayerOne] = useState({
     deck: [],
@@ -159,8 +160,9 @@ function App() {
     setMessage("...waiting for card draw");
     setWar(WAR_STATES.NONE);
     setLog([]);
-    //setHasStartedPlaying(false);
+
     gameOverHandled.current = false;
+    setGameOver(false);
   }, []);
 
   const startGame = useCallback(() => {
@@ -169,13 +171,13 @@ function App() {
   }, [resetGameState]);
 
   const awardToPlayerOne = useCallback(
-    (card1, card2) => {
-      if (war === WAR_STATES.END) return;
+    (card1, card2, warPile1, warPile2) => {
+      if (war === WAR_STATES.END || gameOver) return;
 
       setPlayerOneScore((prev) => prev + 1);
 
-      const warPile1 = playerOne.warPile;
-      const warPile2 = playerTwo.warPile;
+      // const warPile1 = playerOne.warPile;
+      // const warPile2 = playerTwo.warPile;
 
       setPlayerOne((prev) => ({
         ...prev,
@@ -196,17 +198,17 @@ function App() {
       }
       setMessage("Player 1 Wins");
     },
-    [playerOne.warPile, playerTwo.warPile, war]
+    [war, gameOver]
   );
 
   const awardToPlayerTwo = useCallback(
-    (card1, card2) => {
-      if (war === WAR_STATES.END) return;
+    (card1, card2, warPile1, warPile2) => {
+      if (war === WAR_STATES.END || gameOver) return;
 
       setPlayerTwoScore((prev) => prev + 1);
 
-      const warPile1 = playerOne.warPile;
-      const warPile2 = playerTwo.warPile;
+      // const warPile1 = playerOne.warPile;
+      // const warPile2 = playerTwo.warPile;
 
       setPlayerTwo((prev) => ({
         ...prev,
@@ -227,7 +229,23 @@ function App() {
       }
       setMessage("Player 2 Wins");
     },
-    [playerOne.warPile, playerTwo.warPile, war]
+    [war, gameOver]
+  );
+
+  const getWinner = useCallback(
+    (card1, card2) => {
+      if (gameOver) return null;
+      const value1 = RANK_VALUES[card1.rank];
+      const value2 = RANK_VALUES[card2.rank];
+      if (value1 > value2) {
+        return "playerOne";
+      }
+      if (value1 < value2) {
+        return "playerTwo";
+      }
+      return "WAR!";
+    },
+    [gameOver]
   );
 
   const handleCardComparison = useCallback(
@@ -238,15 +256,16 @@ function App() {
         return;
       }
       let result = getWinner(card1, card2);
+      if (!result) return;
 
       const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`;
 
       if (result === "playerOne") {
         logEvent(`${playSummary} -> Player One Wins!`);
-        awardToPlayerOne(card1, card2);
+        awardToPlayerOne(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else if (result === "playerTwo") {
         logEvent(`${playSummary} -> Player Two Wins!`);
-        awardToPlayerTwo(card1, card2);
+        awardToPlayerTwo(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else {
         logEvent(`${playSummary} -> WAR!`);
         setPlayerOne((prev) => ({
@@ -266,7 +285,14 @@ function App() {
         setWar(WAR_STATES.PENDING);
       }
     },
-    [awardToPlayerOne, awardToPlayerTwo, war]
+    [
+      awardToPlayerOne,
+      awardToPlayerTwo,
+      war,
+      playerOne.warPile,
+      playerTwo.warPile,
+      getWinner,
+    ]
   );
 
   function hasNoCards(player) {
@@ -278,6 +304,10 @@ function App() {
   }
 
   const checkForVictory = useCallback(() => {
+    if (!start || gameOver) {
+      return;
+    }
+
     const p1HasNoCards = hasNoCards(playerOne);
     const p2HasNoCards = hasNoCards(playerTwo);
 
@@ -291,6 +321,7 @@ function App() {
       }
       setMessage(`${winner} wins the game!`);
       setWar(WAR_STATES.END);
+      setGameOver(true);
       return;
     }
 
@@ -308,6 +339,7 @@ function App() {
       setPlayerTwoVictories((prev) => prev + 1);
       setMessage("Player One cannot continue war. Player Two wins!");
       setWar(WAR_STATES.END);
+      setGameOver(true);
       return;
     }
 
@@ -315,18 +347,25 @@ function App() {
       setPlayerOneVictories((prev) => prev + 1);
       setMessage("Player Two cannot continue war. Player One wins!");
       setWar(WAR_STATES.END);
+      setGameOver(true);
       return;
     }
-  }, [playerOne, playerTwo]);
+  }, [playerOne, playerTwo, start, gameOver]);
 
   useEffect(() => {
     if (war !== WAR_STATES.END) {
       checkForVictory();
     }
-  }, [playerOne, playerTwo, war, checkForVictory]);
+  }, [playerOne.deck.length,
+  playerOne.reserve.length,
+  playerOne.warPile.length,
+  playerTwo.deck.length,
+  playerTwo.reserve.length,
+  playerTwo.warPile.length, war, checkForVictory]);
 
   const drawCard = useCallback(() => {
-    if (war === WAR_STATES.END || war === WAR_STATES.PENDING) return;
+    if (war === WAR_STATES.END || war === WAR_STATES.PENDING || gameOver)
+      return;
 
     const deckCopy1 = [...playerOne.deck];
     const deckCopy2 = [...playerTwo.deck];
@@ -347,19 +386,7 @@ function App() {
     setSelected2(drawnCard2);
 
     handleCardComparison(drawnCard1, drawnCard2);
-  }, [handleCardComparison, war, playerOne.deck, playerTwo.deck]);
-
-  function getWinner(card1, card2) {
-    const value1 = RANK_VALUES[card1.rank];
-    const value2 = RANK_VALUES[card2.rank];
-    if (value1 > value2) {
-      return "playerOne";
-    }
-    if (value1 < value2) {
-      return "playerTwo";
-    }
-    return "WAR!";
-  }
+  }, [handleCardComparison, war, playerOne.deck, playerTwo.deck, gameOver]);
 
   const prepareDeckForWar = useCallback((deck, reserve) => {
     if (deck.length >= 3) {
