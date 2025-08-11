@@ -41,7 +41,7 @@
 
 .players-info {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
@@ -50,6 +50,7 @@
   /* border: 1px solid #ccc; */
   border: 1px solid var(--accent-muted);
   padding: 10px;
+  margin: 0px 15px 0px 15px;
   border-radius: 8px;
   width: 250px;
   /* background: #f9f9f9; */

@@ -631,7 +631,7 @@ function App() {
         <div>Player Two Victories: {playerTwoVictories}</div>
       </div>
 
-      <div className="players-info">
+      <div className="players-info" style={{border: 'solid black'}}>
         {/* Player one info */}
         <div className="player-info">
           <h3>Player One</h3>
