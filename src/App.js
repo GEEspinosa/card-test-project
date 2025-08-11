@@ -277,49 +277,47 @@ function App() {
     );
   }
 
-const checkForVictory = useCallback(() => {
-  const p1Total =
-    playerOne.deck.length +
-    playerOne.reserve.length +
-    playerOne.warPile.length;
-  const p2Total =
-    playerTwo.deck.length +
-    playerTwo.reserve.length +
-    playerTwo.warPile.length;
+  const checkForVictory = useCallback(() => {
+    const p1HasNoCards = hasNoCards(playerOne);
+    const p2HasNoCards = hasNoCards(playerTwo);
 
-  // Basic check: no cards at all
-  if (p1Total === 0 || p2Total === 0) {
-    const winner = p1Total > p2Total ? "Player One" : "Player Two";
-    if (winner === "Player One") {
-      setPlayerOneVictories((prev) => prev + 1);
-    } else {
-      setPlayerTwoVictories((prev) => prev + 1);
+    // Basic check: no cards at all
+    if (p1HasNoCards || p2HasNoCards) {
+      const winner = p2HasNoCards ? "Player One" : "Player Two";
+      if (winner === "Player One") {
+        setPlayerOneVictories((prev) => prev + 1);
+      } else {
+        setPlayerTwoVictories((prev) => prev + 1);
+      }
+      setMessage(`${winner} wins the game!`);
+      setWar(WAR_STATES.END);
+      return;
     }
-    setMessage(`${winner} wins the game!`);
-    setWar(WAR_STATES.END);
-    return;
-  }
 
-  // Edge case: player has war pile cards but cannot continue war (no deck or reserve cards)
-  const p1CanContinueWar =
-    !(playerOne.warPile.length > 0 && playerOne.deck.length + playerOne.reserve.length === 0);
-  const p2CanContinueWar =
-    !(playerTwo.warPile.length > 0 && playerTwo.deck.length + playerTwo.reserve.length === 0);
+    // Edge case: player has war pile cards but cannot continue war (no deck or reserve cards)
+    const p1CanContinueWar = !(
+      playerOne.warPile.length > 0 &&
+      playerOne.deck.length + playerOne.reserve.length === 0
+    );
+    const p2CanContinueWar = !(
+      playerTwo.warPile.length > 0 &&
+      playerTwo.deck.length + playerTwo.reserve.length === 0
+    );
 
-  if (!p1CanContinueWar) {
-    setPlayerTwoVictories((prev) => prev + 1);
-    setMessage("Player One cannot continue war. Player Two wins!");
-    setWar(WAR_STATES.END);
-    return;
-  }
+    if (!p1CanContinueWar) {
+      setPlayerTwoVictories((prev) => prev + 1);
+      setMessage("Player One cannot continue war. Player Two wins!");
+      setWar(WAR_STATES.END);
+      return;
+    }
 
-  if (!p2CanContinueWar) {
-    setPlayerOneVictories((prev) => prev + 1);
-    setMessage("Player Two cannot continue war. Player One wins!");
-    setWar(WAR_STATES.END);
-    return;
-  }
-}, [playerOne, playerTwo]);
+    if (!p2CanContinueWar) {
+      setPlayerOneVictories((prev) => prev + 1);
+      setMessage("Player Two cannot continue war. Player One wins!");
+      setWar(WAR_STATES.END);
+      return;
+    }
+  }, [playerOne, playerTwo]);
 
   useEffect(() => {
     if (war !== WAR_STATES.END) {
@@ -329,7 +327,7 @@ const checkForVictory = useCallback(() => {
 
   const drawCard = useCallback(() => {
     if (war === WAR_STATES.END || war === WAR_STATES.PENDING) return;
-    
+
     const deckCopy1 = [...playerOne.deck];
     const deckCopy2 = [...playerTwo.deck];
 
@@ -349,12 +347,7 @@ const checkForVictory = useCallback(() => {
     setSelected2(drawnCard2);
 
     handleCardComparison(drawnCard1, drawnCard2);
-  }, [
-    handleCardComparison,
-    war,
-    playerOne.deck,
-    playerTwo.deck,
-  ]);
+  }, [handleCardComparison, war, playerOne.deck, playerTwo.deck]);
 
   function getWinner(card1, card2) {
     const value1 = RANK_VALUES[card1.rank];
@@ -442,7 +435,6 @@ const checkForVictory = useCallback(() => {
   );
 
   const handleContinue = useCallback(() => {
-   
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
 
@@ -450,7 +442,6 @@ const checkForVictory = useCallback(() => {
     const p2Empty = hasNoCards(playerTwo);
 
     if (p1Empty || p2Empty) {
-      //checkGameOver();
       setWar(WAR_STATES.END);
       return;
     }
@@ -580,7 +571,6 @@ const checkForVictory = useCallback(() => {
     playerOne.deck.length,
     playerOne.reserve.length,
     playerTwo.deck.length,
-    playerTwo.length,
     playerTwo.reserve.length,
     startGame,
   ]);
