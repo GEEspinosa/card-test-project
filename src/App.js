@@ -277,26 +277,32 @@ function App() {
     );
   }
 
-  function checkForVictory(p1, p2) {
-    const p1Total = p1.deck.length + p1.reserve.length + p1.warPile.length;
-    const p2Total = p2.deck.length + p2.reserve.length + p2.warPile.length;
+  const checkForVictory = useCallback(() => {
+    const p1Total =
+      playerOne.deck.length +
+      playerOne.reserve.length +
+      playerOne.warPile.length;
+    const p2Total =
+      playerTwo.deck.length +
+      playerTwo.reserve.length +
+      playerTwo.warPile.length;
 
     if (p1Total === 0 && p2Total > 0) {
       setMessage("Player One is out of cards. Player Two wins!");
       setPlayerTwoVictories((prev) => prev + 1);
       setWar(WAR_STATES.END);
-      return true; // indicates game ended
-    }
-
-    if (p2Total === 0 && p1Total > 0) {
+    } else if (p2Total === 0 && p1Total > 0) {
       setMessage("Player Two is out of cards. Player One wins!");
       setPlayerOneVictories((prev) => prev + 1);
       setWar(WAR_STATES.END);
-      return true; // indicates game ended
     }
+  }, [playerOne, playerTwo]);
 
-    return false; //game continues
-  }
+  useEffect(() => {
+    if (war !== WAR_STATES.END) {
+      checkForVictory();
+    }
+  }, [playerOne, playerTwo, war, checkForVictory]);
 
   const drawCard = useCallback(() => {
     if (war === WAR_STATES.END || war === WAR_STATES.PENDING) return;
@@ -386,9 +392,9 @@ function App() {
   }, []);
 
   const fillWarPiles = useCallback(() => {
-    if (checkForVictory(playerOne, playerTwo)) {
-      return; //stop further play if game ended
-    }
+    // if (checkForVictory(playerOne, playerTwo)) {
+    //   return; //stop further play if game ended
+    // }
     const p1Total = playerOne.deck.length + playerOne.reserve.length;
     const p2Total = playerTwo.deck.length + playerTwo.reserve.length;
 
@@ -631,7 +637,7 @@ function App() {
         <div>Player Two Victories: {playerTwoVictories}</div>
       </div>
 
-      <div className="players-info" style={{border: 'solid black'}}>
+      <div className="players-info" style={{ border: "solid black" }}>
         {/* Player one info */}
         <div className="player-info">
           <h3>Player One</h3>
