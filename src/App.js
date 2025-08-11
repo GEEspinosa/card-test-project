@@ -277,26 +277,49 @@ function App() {
     );
   }
 
-  const checkForVictory = useCallback(() => {
-    const p1Total =
-      playerOne.deck.length +
-      playerOne.reserve.length +
-      playerOne.warPile.length;
-    const p2Total =
-      playerTwo.deck.length +
-      playerTwo.reserve.length +
-      playerTwo.warPile.length;
+const checkForVictory = useCallback(() => {
+  const p1Total =
+    playerOne.deck.length +
+    playerOne.reserve.length +
+    playerOne.warPile.length;
+  const p2Total =
+    playerTwo.deck.length +
+    playerTwo.reserve.length +
+    playerTwo.warPile.length;
 
-    if (p1Total === 0 && p2Total > 0) {
-      setMessage("Player One is out of cards. Player Two wins!");
-      setPlayerTwoVictories((prev) => prev + 1);
-      setWar(WAR_STATES.END);
-    } else if (p2Total === 0 && p1Total > 0) {
-      setMessage("Player Two is out of cards. Player One wins!");
+  // Basic check: no cards at all
+  if (p1Total === 0 || p2Total === 0) {
+    const winner = p1Total > p2Total ? "Player One" : "Player Two";
+    if (winner === "Player One") {
       setPlayerOneVictories((prev) => prev + 1);
-      setWar(WAR_STATES.END);
+    } else {
+      setPlayerTwoVictories((prev) => prev + 1);
     }
-  }, [playerOne, playerTwo]);
+    setMessage(`${winner} wins the game!`);
+    setWar(WAR_STATES.END);
+    return;
+  }
+
+  // Edge case: player has war pile cards but cannot continue war (no deck or reserve cards)
+  const p1CanContinueWar =
+    !(playerOne.warPile.length > 0 && playerOne.deck.length + playerOne.reserve.length === 0);
+  const p2CanContinueWar =
+    !(playerTwo.warPile.length > 0 && playerTwo.deck.length + playerTwo.reserve.length === 0);
+
+  if (!p1CanContinueWar) {
+    setPlayerTwoVictories((prev) => prev + 1);
+    setMessage("Player One cannot continue war. Player Two wins!");
+    setWar(WAR_STATES.END);
+    return;
+  }
+
+  if (!p2CanContinueWar) {
+    setPlayerOneVictories((prev) => prev + 1);
+    setMessage("Player Two cannot continue war. Player One wins!");
+    setWar(WAR_STATES.END);
+    return;
+  }
+}, [playerOne, playerTwo]);
 
   useEffect(() => {
     if (war !== WAR_STATES.END) {
@@ -306,36 +329,7 @@ function App() {
 
   const drawCard = useCallback(() => {
     if (war === WAR_STATES.END || war === WAR_STATES.PENDING) return;
-    if (
-      playerOne.deck.length === 0 &&
-      playerOne.reserve.length === 0 &&
-      playerOne.warPile.length === 0
-    ) {
-      console.log("Incrementing Player Two Victories from", playerTwoVictories);
-      setMessage("Player One out of cards. Player Two wins!");
-      setPlayerTwoVictories((prev) => {
-        console.log("New Player Two Victories", prev + 1);
-        return prev + 1;
-      });
-      setWar(WAR_STATES.END);
-      return;
-    }
-
-    if (
-      playerTwo.deck.length === 0 &&
-      playerTwo.reserve.length === 0 &&
-      playerTwo.warPile.length === 0
-    ) {
-      console.log("Incrementing Player One Victories from", playerOneVictories);
-      setMessage("Player Two out of cards. Player One wins!");
-      setPlayerOneVictories((prev) => {
-        console.log("New Player One Victories", prev + 1);
-        return prev + 1;
-      });
-      setWar(WAR_STATES.END);
-      return;
-    }
-
+    
     const deckCopy1 = [...playerOne.deck];
     const deckCopy2 = [...playerTwo.deck];
 
@@ -357,15 +351,9 @@ function App() {
     handleCardComparison(drawnCard1, drawnCard2);
   }, [
     handleCardComparison,
-    playerOneVictories,
-    playerTwoVictories,
     war,
     playerOne.deck,
-    playerOne.reserve.length,
-    playerOne.warPile.length,
     playerTwo.deck,
-    playerTwo.reserve.length,
-    playerTwo.warPile.length,
   ]);
 
   function getWinner(card1, card2) {
@@ -392,29 +380,6 @@ function App() {
   }, []);
 
   const fillWarPiles = useCallback(() => {
-    // if (checkForVictory(playerOne, playerTwo)) {
-    //   return; //stop further play if game ended
-    // }
-    const p1Total = playerOne.deck.length + playerOne.reserve.length;
-    const p2Total = playerTwo.deck.length + playerTwo.reserve.length;
-
-    // If ONLY player one can't continue
-    if (p1Total < 3) {
-      setMessage("Player One can't continue. Player Two wins!");
-      setPlayerTwoVictories((prev) => prev + 1);
-      setWar(WAR_STATES.END);
-      return;
-    }
-
-    // If ONLY player two can't continue
-    if (p2Total < 3) {
-      setMessage("Player Two can't continue. Player One wins!");
-      setPlayerOneVictories((prev) => prev + 1);
-      setWar(WAR_STATES.END);
-      return;
-    }
-
-    // Otherwise, check if either needs to refresh deck
     const p1CanRefresh = canRefreshDeck(playerOne);
     const p2CanRefresh = canRefreshDeck(playerTwo);
 
@@ -425,7 +390,6 @@ function App() {
       setMessage("Need to refresh deck before filling war piles!!!");
       return;
     }
-    //keep this as is
 
     const { deck: p1Deck, reserve: p1Reserve } = prepareDeckForWar(
       playerOne.deck,
@@ -478,7 +442,7 @@ function App() {
   );
 
   const handleContinue = useCallback(() => {
-    setWar(WAR_STATES.NONE);
+   
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
 
