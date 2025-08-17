@@ -9,11 +9,8 @@ class Card {
   }
 }
 
-const THEMES = {
-  dark: "dark",      // corresponds to :root
-  light: "light",    // corresponds to :root.light
-  retro: "retro",    // corresponds to :root.retro
-};
+const themes = ['classic', 'retro', 'neon'];
+const mode = 'light' | 'dark'
 
 const WAR_STATES = {
   NONE: "none",
@@ -46,15 +43,13 @@ function App() {
   const [message, setMessage] = useState("...waiting for card draw");
   const [log, setLog] = useState([]);
   const [logOpen, setLogOpen] = useState(true);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("classic");
+  const [mode, setMode] = useState("dark")
 
 
   useEffect(() => {
-    // removes all previous theme classes
-    document.documentElement.classList.remove(...Object.values(THEMES));
-    // add the current theme
-    document.documentElement.classList.add(theme);
-  }, [theme])
+    document.documentElement.className = `${theme} ${mode}`
+  }, [theme, mode])
 
   useEffect(() => {
     console.log("Player One Victories changed:", playerOneVictories);
@@ -631,7 +626,7 @@ function App() {
     <div className="app-container">
       <h1 className="title">Attrition: The Super War Card Game!</h1>
       <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-        {Object.keys(THEMES).map((t) => (
+        {themes.map((t) => (
           <button
             key={t}
             onClick={() => setTheme(t)}

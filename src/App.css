@@ -1,34 +1,52 @@
-/* dark theme */
-:root {
-  --dark-base: #1e1a1e; /* main background */
-  --dark-deep: #121013; /* darker contrast */
-  --accent-muted: #5c5466; /* borders/buttons */
-  --darkest: #0b0a0b; /* blackest element */
-  --panel-bg: #3a3442; /* log + info panels */
-  --text-light: #f0f0f0; /* light text */
-  --highlight: #57a05c; /* accent (keep or replace) */
+/* Classic Theme */
+:root.classic.dark {
+  --base: #1e1a1e;
+  --deep: #121013;
+  --accent: #57a05c;
+  --panel: #3a3442;
+  --text: #f0f0f0;
 }
 
-/* light theme */
-:root.light {
-  --dark-base: #fdfdfd;
-  --dark-deep: #eaeaea;
-  --accent-muted: #cccccc;
-  --darkest: #bbbbbb;
-  --panel-bg: #f5f5f5;
-  --text-light: #111;
-  --highlight: #3a82f6;
+:root.classic.light {
+  --base: #fdfdfd;
+  --deep: #eaeaea;
+  --accent: #3a82f6;
+  --panel: #f5f5f5;
+  --text: #111;
 }
 
-/* Retro / Casino Theme */
-:root.retro {
-  --dark-base: #2d1b00;
-  --dark-deep: #1a0f00;
-  --accent-muted: #b8860b;
-  --darkest: #0d0500;
-  --panel-bg: #4b2e00;
-  --text-light: #ffecb3;
-  --highlight: #ff4444; /* flashy red */
+/* Neon Theme */
+:root.neon.dark {
+  --base: #0b0b1b;
+  --deep: #05051a;
+  --accent: #ff00ff;
+  --panel: #1a0a3a;
+  --text: #00ffff;
+}
+
+:root.neon.light {
+  --base: #f0f0ff;
+  --deep: #d0d0ff;
+  --accent: #ff00ff;
+  --panel: #e0e0ff;
+  --text: #0a0a0a;
+}
+
+/* Retro Theme */
+:root.retro.dark {
+  --base: #2d1b00;
+  --deep: #1a0f00;
+  --accent: #ff4444;
+  --panel: #4b2e00;
+  --text: #ffecb3;
+}
+
+:root.retro.light {
+  --base: #fff4e0;
+  --deep: #f5e0c0;
+  --accent: #ff6666;
+  --panel: #ffe5b4;
+  --text: #111;
 }
 
 .app-container {
@@ -36,15 +54,15 @@
   padding: 20px;
   text-align: center;
   /* new */
-  background-color: var(--dark-base);
-  color: var(--text-light);
+  background-color: var(--base);
+  color: var(--text);
 }
 
 .title {
   font-size: 2rem;
   margin-bottom: 10px;
   /* new */
-  color: var(--text-light);
+  color: var(--text);
 }
 
 .message {
@@ -52,7 +70,7 @@
   margin-bottom: 20px;
   /* color: #444; */
   /* new */
-  color: var(--text-light);
+  color: var(--text);
 }
 
 .scoreboard {
@@ -71,20 +89,37 @@
 
 .player-info {
   /* border: 1px solid #ccc; */
-  border: 1px solid var(--accent-muted);
+  border: 1px solid var(--accent);
   padding: 10px;
   margin: 0px 15px 0px 15px;
   border-radius: 8px;
   width: 250px;
   /* background: #f9f9f9; */
   /* new */
-  background: var(--panel-bg);
-  color: var(--text-light);
+  background: var(--panel);
+  color: var(--text);
+}
+
+.card {
+  margin: 10px auto;
+  padding: 20px;
+  width: 100px;
+  height: 140px;
+  background: var(--deep);       /* card background */
+  border: 2px solid var(--accent); /* border matches theme accent */
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text);           /* text color matches theme */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 button {
-  background-color: var(--highlight);
-  color: white;
+  background-color: var(--accent);
+  color: var(--text);
    border: none;
   border-radius: 6px;
   padding: 10px 20px;
@@ -117,42 +152,8 @@ button:disabled {
 }
 
 button:focus-visible {
-  outline: 3px solid var(--highlight); /* Material Design green */
+  outline: 3px solid var(--accent); /* Material Design green */
   outline-offset: 3px;
-}
-
-/* .player-info button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 6px;
-  background-color: var(--highlight);
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.player-info button:hover {
-  background-color: #57a05c;
-} */
-
-.card {
-  margin: 10px auto;
-  padding: 20px;
-  width: 100px;
-  height: 140px;
-  /* background: white;
-  border: 2px solid black; */
-  background: var(--dark-deep);
-  border: 2px solid var(--accent-muted);
-  border-radius: 10px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  /* new */
-  color: var(--text-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
 }
 
 .stats p {
@@ -163,19 +164,6 @@ button:focus-visible {
   margin: 20px 0;
 }
 
-/* .game-controls button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 6px;
-  background-color: var(--highlight);
-  color: white;
-  border: none;
-  cursor: pointer;
-} */
-
-/* .game-controls button:hover {
-  background-color: #57a05c;
-} */
 
 .log-section {
   margin-top: 30px;
@@ -206,7 +194,7 @@ button:focus-visible {
   height: 2px;
   /* background-color: black; */
   /* new */
-  background-color: var(--text-light);
+  background-color: var(--text);
   top: 50%;
   transform-origin: center;
   transition: transform 0.3s ease;
@@ -237,15 +225,15 @@ button:focus-visible {
   padding: 10px;
   /* background: #f1f1f1; */
   /* new */
-  background: var(--panel-bg);
+  background: var(--panel);
   border-radius: 8px;
   /* border: solid black; */
   /* new */
-  border: 1px solid var(--accent-muted);
+  border: 1px solid var(--accent);
   width: 100%;
   box-sizing: border-box;
   /* new */
-  color: var(--text-light);
+  color: var(--text);
 }
 
 .log-box ul {
