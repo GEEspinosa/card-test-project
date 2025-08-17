@@ -58,8 +58,8 @@
 }
 
 .theme-selector {
-  display: flex; 
-  gap: 1rem; 
+  display: flex;
+  gap: 1rem;
   justify-content: center;
   margin-bottom: 1rem;
 }
@@ -78,7 +78,6 @@
   display: inline-block;
   width: 52px;
   height: 26px;
-  
 }
 
 .mode-toggle input {
@@ -88,56 +87,51 @@
 }
 
 .mode-toggle .slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--panel);
-    border-radius: 999px;
-    cursor: pointer;
-    box-sizing: border-box;
-     border: 2px solid var(--accent);
-   
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-    
-  }
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--panel);
+  border-radius: 999px;
+  cursor: pointer;
+  box-sizing: border-box;
+  border: 2px solid var(--accent);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
 
-  .mode-toggle .slider::before {
-    content: '';
-    position: absolute;
-    height: 20px;
-    width: 20px;
-    left: 2px;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: var(--accent);
-    border-radius: 50%;
-    transition: transform 0.3s ease, background-color 0.3s ease
-  }
+.mode-toggle .slider::before {
+  content: "";
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--accent);
+  border-radius: 50%;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
 
-  .mode-toggle input:checked + .slider::before {
-    transform: translateX(24px) translateY(-50%);
-    background-color: var(--text);
-  }
+.mode-toggle input:checked + .slider::before {
+  transform: translateX(24px) translateY(-50%);
+  background-color: var(--text);
+}
 
-  .mode-toggle input:checked + .slider {
-    background-color: var(--panel);
-    border-color: var(--accent);
-  }
+.mode-toggle input:checked + .slider {
+  background-color: var(--panel);
+  border-color: var(--accent);
+}
 
 .title {
   font-size: 2rem;
   margin-bottom: 10px;
-  /* new */
   color: var(--text);
 }
 
 .message {
   font-size: 1.2rem;
   margin-bottom: 20px;
-  /* color: #444; */
-  /* new */
   color: var(--text);
 }
 
@@ -156,14 +150,11 @@
 }
 
 .player-info {
-  /* border: 1px solid #ccc; */
   border: 1px solid var(--accent);
   padding: 10px;
   margin: 0px 15px 0px 15px;
   border-radius: 8px;
   width: 250px;
-  /* background: #f9f9f9; */
-  /* new */
   background: var(--panel);
   color: var(--text);
 }
@@ -173,12 +164,12 @@
   padding: 20px;
   width: 100px;
   height: 140px;
-  background: var(--deep);       /* card background */
+  background: var(--deep); /* card background */
   border: 2px solid var(--accent); /* border matches theme accent */
   border-radius: 10px;
   font-size: 1.2rem;
   font-weight: bold;
-  color: var(--text);           /* text color matches theme */
+  color: var(--text); /* text color matches theme */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -188,24 +179,26 @@
 button {
   background-color: var(--accent);
   color: var(--text);
-   border: none;
+  border: none;
   border-radius: 6px;
   padding: 10px 20px;
   font-size: 1rem;
   cursor: pointer;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
-   font-weight: 600;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.15s ease;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 button:hover {
   background-color: #57a05c; /* Slightly darker or complementary */
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.15s ease;
 }
 
 button:active {
@@ -231,7 +224,6 @@ button:focus-visible {
 .game-controls {
   margin: 20px 0;
 }
-
 
 .log-section {
   margin-top: 30px;
@@ -260,8 +252,6 @@ button:focus-visible {
   position: absolute;
   width: 12px;
   height: 2px;
-  /* background-color: black; */
-  /* new */
   background-color: var(--text);
   top: 50%;
   transform-origin: center;
@@ -291,16 +281,11 @@ button:focus-visible {
   overflow-y: auto;
   text-align: left;
   padding: 10px;
-  /* background: #f1f1f1; */
-  /* new */
   background: var(--panel);
   border-radius: 8px;
-  /* border: solid black; */
-  /* new */
   border: 1px solid var(--accent);
   width: 100%;
   box-sizing: border-box;
-  /* new */
   color: var(--text);
 }
 
