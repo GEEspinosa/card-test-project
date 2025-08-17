@@ -10,21 +10,9 @@ class Card {
 }
 
 const THEMES = {
-  classic: {
-    boardBg: "bg-green-700",
-    text: "text-white",
-    cardBack: "/images/classic-back.png",
-  },
-  dark: {
-    boardBg: "bg-gray-900",
-    text: "text-gray-200",
-    cardBack: "/images/dark-back.png",
-  },
-  neon: {
-    boardBg: "bg-black",
-    text: "text-neon-pink",
-    cardBack: "/images/neon-back.png",
-  },
+  dark: "dark",      // corresponds to :root
+  light: "light",    // corresponds to :root.light
+  retro: "retro",    // corresponds to :root.retro
 };
 
 const WAR_STATES = {
@@ -62,7 +50,10 @@ function App() {
 
 
   useEffect(() => {
-    document.documentElement.className = theme;
+    // removes all previous theme classes
+    document.documentElement.classList.remove(...Object.values(THEMES));
+    // add the current theme
+    document.documentElement.classList.add(theme);
   }, [theme])
 
   useEffect(() => {
@@ -639,6 +630,17 @@ function App() {
   return (
     <div className="app-container">
       <h1 className="title">Attrition: The Super War Card Game!</h1>
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+        {Object.keys(THEMES).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTheme(t)}
+            className={theme === t ? "active-theme" : ""}
+          >
+            {t[0].toUpperCase() + t.slice(1)}
+          </button>
+        ))}
+      </div>
       <h2 className="message">{message}</h2>
 
       <div className="scoreboard">
@@ -729,11 +731,7 @@ function App() {
           )}
         </div>
       </div>
-       <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-        <button onClick={() => setTheme("dark")}>Dark</button>
-        <button onClick={() => setTheme("light")}>Light</button>
-        <button onClick={() => setTheme("retro")}>Retro</button>
-      </div>
+      
     </div>
   );
 }
