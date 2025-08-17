@@ -9,6 +9,24 @@ class Card {
   }
 }
 
+const THEMES = {
+  classic: {
+    boardBg: "bg-green-700",
+    text: "text-white",
+    cardBack: "/images/classic-back.png",
+  },
+  dark: {
+    boardBg: "bg-gray-900",
+    text: "text-gray-200",
+    cardBack: "/images/dark-back.png",
+  },
+  neon: {
+    boardBg: "bg-black",
+    text: "text-neon-pink",
+    cardBack: "/images/neon-back.png",
+  },
+};
+
 const WAR_STATES = {
   NONE: "none",
   PENDING: "pending",
@@ -40,6 +58,12 @@ function App() {
   const [message, setMessage] = useState("...waiting for card draw");
   const [log, setLog] = useState([]);
   const [logOpen, setLogOpen] = useState(true);
+  const [theme, setTheme] = useState("dark");
+
+
+  useEffect(() => {
+    document.documentElement.className = theme;
+  }, [theme])
 
   useEffect(() => {
     console.log("Player One Victories changed:", playerOneVictories);
@@ -356,12 +380,16 @@ function App() {
     if (war !== WAR_STATES.END) {
       checkForVictory();
     }
-  }, [playerOne.deck.length,
-  playerOne.reserve.length,
-  playerOne.warPile.length,
-  playerTwo.deck.length,
-  playerTwo.reserve.length,
-  playerTwo.warPile.length, war, checkForVictory]);
+  }, [
+    playerOne.deck.length,
+    playerOne.reserve.length,
+    playerOne.warPile.length,
+    playerTwo.deck.length,
+    playerTwo.reserve.length,
+    playerTwo.warPile.length,
+    war,
+    checkForVictory,
+  ]);
 
   const drawCard = useCallback(() => {
     if (war === WAR_STATES.END || war === WAR_STATES.PENDING || gameOver)
@@ -700,6 +728,11 @@ function App() {
             </div>
           )}
         </div>
+      </div>
+       <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+        <button onClick={() => setTheme("dark")}>Dark</button>
+        <button onClick={() => setTheme("light")}>Light</button>
+        <button onClick={() => setTheme("retro")}>Retro</button>
       </div>
     </div>
   );

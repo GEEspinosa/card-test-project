@@ -1,3 +1,4 @@
+/* dark theme */
 :root {
   --dark-base: #1e1a1e; /* main background */
   --dark-deep: #121013; /* darker contrast */
@@ -6,6 +7,28 @@
   --panel-bg: #3a3442; /* log + info panels */
   --text-light: #f0f0f0; /* light text */
   --highlight: #57a05c; /* accent (keep or replace) */
+}
+
+/* light theme */
+:root.light {
+  --dark-base: #fdfdfd;
+  --dark-deep: #eaeaea;
+  --accent-muted: #cccccc;
+  --darkest: #bbbbbb;
+  --panel-bg: #f5f5f5;
+  --text-light: #111;
+  --highlight: #3a82f6;
+}
+
+/* Retro / Casino Theme */
+:root.retro {
+  --dark-base: #2d1b00;
+  --dark-deep: #1a0f00;
+  --accent-muted: #b8860b;
+  --darkest: #0d0500;
+  --panel-bg: #4b2e00;
+  --text-light: #ffecb3;
+  --highlight: #ff4444; /* flashy red */
 }
 
 .app-container {
