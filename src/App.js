@@ -9,8 +9,8 @@ class Card {
   }
 }
 
-const themes = ['classic', 'retro', 'neon'];
-const mode = 'light' | 'dark'
+const themes = ["classic", "retro", "neon"];
+const mode = "light" | "dark";
 
 const WAR_STATES = {
   NONE: "none",
@@ -44,12 +44,11 @@ function App() {
   const [log, setLog] = useState([]);
   const [logOpen, setLogOpen] = useState(true);
   const [theme, setTheme] = useState("classic");
-  const [mode, setMode] = useState("dark")
-
+  const [mode, setMode] = useState("dark");
 
   useEffect(() => {
-    document.documentElement.className = `${theme} ${mode}`
-  }, [theme, mode])
+    document.documentElement.className = `${theme} ${mode}`;
+  }, [theme, mode]);
 
   useEffect(() => {
     console.log("Player One Victories changed:", playerOneVictories);
@@ -625,7 +624,7 @@ function App() {
   return (
     <div className="app-container">
       <h1 className="title">Attrition: The Super War Card Game!</h1>
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+      <div className="theme-selector">
         {themes.map((t) => (
           <button
             key={t}
@@ -636,6 +635,18 @@ function App() {
           </button>
         ))}
       </div>
+      <div className="mode-toggle-container">
+        <span>Mode:</span>
+        <label className="mode-toggle">
+          <input
+            type="checkbox"
+            check={mode === "dark"}
+            onChange={() => setMode(mode === "dark" ? "light" : "dark")}
+          />
+          <span className="slider" />
+        </label>
+      </div>
+
       <h2 className="message">{message}</h2>
 
       <div className="scoreboard">
@@ -726,7 +737,6 @@ function App() {
           )}
         </div>
       </div>
-      
     </div>
   );
 }
