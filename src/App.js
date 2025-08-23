@@ -179,15 +179,27 @@ function App() {
     setStart(true);
   }, [resetGameState]);
 
+
+  const findScoreSum = useCallback ((card1, card2, warPile1, warPile2) => {
+    let playedCards = (RANK_VALUES[card1.rank]) + (RANK_VALUES[card2.rank]);
+    let warPileOneSum = 0;
+    let warPileTwoSum = 0;
+    for (let i = 0; i < warPile1.length; i++) {
+      warPileOneSum += RANK_VALUES[warPile1[i].rank]
+    }
+
+    for (let i = 0; i < warPile2.length; i++) {
+      warPileTwoSum += RANK_VALUES[warPile2[i].rank]
+    }
+    return playedCards + warPileOneSum + warPileTwoSum
+  }, [])
+
   const awardToPlayerOne = useCallback(
     (card1, card2, warPile1, warPile2) => {
       if (war === WAR_STATES.END || gameOver) return;
 
-      setPlayerOneScore((prev) => prev + 1);
-
-      // const warPile1 = playerOne.warPile;
-      // const warPile2 = playerTwo.warPile;
-
+      let sum = findScoreSum(card1, card2, warPile1, warPile2)
+      setPlayerOneScore((prev) => prev + sum);
       setPlayerOne((prev) => ({
         ...prev,
         reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
@@ -207,18 +219,19 @@ function App() {
       }
       setMessage("Player 1 Wins");
     },
-    [war, gameOver]
+    [war, findScoreSum, gameOver]
   );
+
+  
+
 
   const awardToPlayerTwo = useCallback(
     (card1, card2, warPile1, warPile2) => {
       if (war === WAR_STATES.END || gameOver) return;
 
-      setPlayerTwoScore((prev) => prev + 1);
+      let sum = findScoreSum(card1, card2, warPile1, warPile2)
 
-      // const warPile1 = playerOne.warPile;
-      // const warPile2 = playerTwo.warPile;
-
+      setPlayerTwoScore((prev) => prev + sum);
       setPlayerTwo((prev) => ({
         ...prev,
         reserve: [...prev.reserve, card1, card2, ...warPile1, ...warPile2],
@@ -238,7 +251,7 @@ function App() {
       }
       setMessage("Player 2 Wins");
     },
-    [war, gameOver]
+    [war, findScoreSum, gameOver]
   );
 
   const getWinner = useCallback(
