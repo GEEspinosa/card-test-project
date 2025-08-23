@@ -281,12 +281,15 @@ function App() {
       if (!result) return;
 
       const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`;
+      const score = `${findScoreSum(card1, card2, playerOne.warPile, playerTwo.warPile)}`
 
       if (result === "playerOne") {
-        logEvent(`${playSummary} -> Player One Wins!`);
+        console.log(score)
+        logEvent(`${playSummary} -> Player One Wins! Earned ${score} Points!`);
         awardToPlayerOne(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else if (result === "playerTwo") {
-        logEvent(`${playSummary} -> Player Two Wins!`);
+        console.log(score)
+        logEvent(`${playSummary} -> Player Two Wins! Earned ${score} Points!`);
         awardToPlayerTwo(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else {
         logEvent(`${playSummary} -> WAR!`);
