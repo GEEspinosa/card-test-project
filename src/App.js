@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import "./App.css";
 import { SUITS, RANKS, RANK_VALUES } from "./assets/card-data";
-import {SunIcon, MoonIcon} from "@heroicons/react/24/solid";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
 
 class Card {
   constructor(suit, rank) {
@@ -657,14 +657,14 @@ function App() {
       <div className="mode-toggle-container">
         {/* <span>Mode:</span> */}
         <span className="icon">
-            {mode === "dark" ? (
-              //moon
-              <MoonIcon className="moon-icon"/>
-            ) : (
-              //sun
-              <SunIcon className="sun-icon" />
-            )}
-          </span>
+          {mode === "dark" ? (
+            //moon
+            <MoonIcon className="moon-icon" />
+          ) : (
+            //sun
+            <SunIcon className="sun-icon" />
+          )}
+        </span>
         <label className="mode-toggle">
           <input
             type="checkbox"
@@ -672,7 +672,6 @@ function App() {
             onChange={() => setMode(mode === "dark" ? "light" : "dark")}
           />
           <span className="slider" />
-          
         </label>
       </div>
 
@@ -683,13 +682,23 @@ function App() {
         <div>Player Two Victories: {playerTwoVictories}</div>
       </div>
 
-      <div className="players-info" >
+      <div className="players-info">
         {/* Player one info */}
         <div className="player-info">
           <h3>Player One</h3>
-          <div className="card">
-            {selected1.rank} {selected1.suit}
-          </div>
+          {selected1.suit === "draw" ? (
+            <div className="card">
+              {selected1.suit} {selected1.rank} 
+            </div>
+          ) : (
+            <div className="card">
+              <div className="card-rank top-left">{selected1.rank}</div>
+              <div className="card-rank bottom-right">{selected1.rank}</div>
+              <div className="card-suit-container">
+                <div className="card-suit">{selected1.suit}</div>
+              </div>
+            </div>
+          )}
           {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
             <button onClick={() => refreshDeck("playerOne")}>Fresh Deck</button>
           )}
@@ -704,9 +713,19 @@ function App() {
         {/* Player two info */}
         <div className="player-info">
           <h3>Player Two</h3>
-          <div className="card">
-            {selected2.rank} {selected2.suit}
-          </div>
+          {selected2.suit === "draw" ? (
+            <div className="card">
+              {selected2.suit} {selected2.rank} 
+            </div>
+          ) : (
+            <div className="card">
+              <div className="card-rank top-left">{selected2.rank}</div>
+              <div className="card-rank bottom-right">{selected2.rank}</div>
+              <div className="card-suit-container">
+                <div className="card-suit">{selected2.suit}</div>
+              </div>
+            </div>
+          )}
           {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
             <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck</button>
           )}

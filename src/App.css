@@ -195,6 +195,56 @@
   text-align: center;
 }
 
+.card {
+ position: relative;
+  margin: 10px auto;
+  padding: 8px;
+  width: 130px;
+  height: 170px;
+  background: var(--deep);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  font-weight: bold;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.card-rank {
+  position: absolute;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.card-rank.top-left {
+  top: 4px;
+  left: 6px;
+}
+
+.card-rank.bottom-right {
+  bottom: 4px;
+  right: 6px;
+  /* transform: rotate(180deg); */
+}
+
+.card-suit-container {
+  width: 60%;
+  height: 60%;
+  padding: 10px;
+  /* border: 2px solid var(--accent); */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-suit {
+  font-size: 2rem;
+}
+
 button {
   background-color: var(--accent);
   color: var(--text);
