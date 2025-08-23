@@ -82,12 +82,11 @@ function App() {
 
   const canRefreshDeck = useCallback(
     (player) => {
-      const hasReserve = player.reserve.length > 0;
-      const isInWar = war === WAR_STATES.PENDING;
-
-      if (!start) {
+      if (!start || war === WAR_STATES.END) {
         return false;
       }
+      const hasReserve = player.reserve.length > 0;
+      const isInWar = war === WAR_STATES.PENDING;
 
       if (!isInWar) {
         return player.deck.length === 0 && hasReserve;
@@ -339,45 +338,60 @@ function App() {
     const p1HasNoCards = hasNoCards(playerOne);
     const p2HasNoCards = hasNoCards(playerTwo);
 
-    // Basic check: no cards at all
     if (p1HasNoCards || p2HasNoCards) {
-      const winner = p2HasNoCards ? "Player One" : "Player Two";
-      if (winner === "Player One") {
-        setPlayerOneVictories((prev) => prev + 1);
-      } else {
-        setPlayerTwoVictories((prev) => prev + 1);
-      }
-      setMessage(`${winner} wins the game!`);
-      setWar(WAR_STATES.END);
-      setGameOver(true);
-      return;
-    }
-
-    // Edge case: player has war pile cards but cannot continue war (no deck or reserve cards)
-    const p1CanContinueWar = !(
-      playerOne.warPile.length > 0 &&
-      playerOne.deck.length + playerOne.reserve.length === 0
-    );
-    const p2CanContinueWar = !(
-      playerTwo.warPile.length > 0 &&
-      playerTwo.deck.length + playerTwo.reserve.length === 0
-    );
-
-    if (!p1CanContinueWar) {
+    if (p1HasNoCards && p2HasNoCards) {
+      setMessage("It's a tie!");
+    } else if (p1HasNoCards) {
       setPlayerTwoVictories((prev) => prev + 1);
-      setMessage("Player One cannot continue war. Player Two wins!");
-      setWar(WAR_STATES.END);
-      setGameOver(true);
-      return;
+      setMessage("Player One has no cards left. Player Two wins!");
+    } else {
+      setPlayerOneVictories((prev) => prev + 1);
+      setMessage("Player Two has no cards left. Player One wins!");
     }
 
-    if (!p2CanContinueWar) {
-      setPlayerOneVictories((prev) => prev + 1);
-      setMessage("Player Two cannot continue war. Player One wins!");
-      setWar(WAR_STATES.END);
-      setGameOver(true);
-      return;
-    }
+    setWar(WAR_STATES.END);
+    setGameOver(true);
+    return;}
+
+    // // Basic check: no cards at all
+    // if (p1HasNoCards || p2HasNoCards) {
+    //   const winner = p2HasNoCards ? "Player One" : "Player Two";
+    //   if (winner === "Player One") {
+    //     setPlayerOneVictories((prev) => prev + 1);
+    //   } else {
+    //     setPlayerTwoVictories((prev) => prev + 1);
+    //   }
+    //   setMessage(`${winner} wins the game!`);
+    //   setWar(WAR_STATES.END);
+    //   setGameOver(true);
+    //   return;
+    // }
+
+    // // Edge case: player has war pile cards but cannot continue war (no deck or reserve cards)
+    // const p1CanContinueWar = !(
+    //   playerOne.warPile.length > 0 &&
+    //   playerOne.deck.length + playerOne.reserve.length === 0
+    // );
+    // const p2CanContinueWar = !(
+    //   playerTwo.warPile.length > 0 &&
+    //   playerTwo.deck.length + playerTwo.reserve.length === 0
+    // );
+
+    // if (!p1CanContinueWar) {
+    //   setPlayerTwoVictories((prev) => prev + 1);
+    //   setMessage("Player One cannot continue war. Player Two wins!");
+    //   setWar(WAR_STATES.END);
+    //   setGameOver(true);
+    //   return;
+    // }
+
+    // if (!p2CanContinueWar) {
+    //   setPlayerOneVictories((prev) => prev + 1);
+    //   setMessage("Player Two cannot continue war. Player One wins!");
+    //   setWar(WAR_STATES.END);
+    //   setGameOver(true);
+    //   return;
+    // }
   }, [playerOne, playerTwo, start, gameOver]);
 
   useEffect(() => {
