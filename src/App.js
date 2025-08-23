@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import "./App.css";
 import { SUITS, RANKS, RANK_VALUES } from "./assets/card-data";
+import {SunIcon, MoonIcon} from "@heroicons/react/24/solid";
 
 class Card {
   constructor(suit, rank) {
@@ -179,26 +180,25 @@ function App() {
     setStart(true);
   }, [resetGameState]);
 
-
-  const findScoreSum = useCallback ((card1, card2, warPile1, warPile2) => {
-    let playedCards = (RANK_VALUES[card1.rank]) + (RANK_VALUES[card2.rank]);
+  const findScoreSum = useCallback((card1, card2, warPile1, warPile2) => {
+    let playedCards = RANK_VALUES[card1.rank] + RANK_VALUES[card2.rank];
     let warPileOneSum = 0;
     let warPileTwoSum = 0;
     for (let i = 0; i < warPile1.length; i++) {
-      warPileOneSum += RANK_VALUES[warPile1[i].rank]
+      warPileOneSum += RANK_VALUES[warPile1[i].rank];
     }
 
     for (let i = 0; i < warPile2.length; i++) {
-      warPileTwoSum += RANK_VALUES[warPile2[i].rank]
+      warPileTwoSum += RANK_VALUES[warPile2[i].rank];
     }
-    return playedCards + warPileOneSum + warPileTwoSum
-  }, [])
+    return playedCards + warPileOneSum + warPileTwoSum;
+  }, []);
 
   const awardToPlayerOne = useCallback(
     (card1, card2, warPile1, warPile2) => {
       if (war === WAR_STATES.END || gameOver) return;
 
-      let sum = findScoreSum(card1, card2, warPile1, warPile2)
+      let sum = findScoreSum(card1, card2, warPile1, warPile2);
       setPlayerOneScore((prev) => prev + sum);
       setPlayerOne((prev) => ({
         ...prev,
@@ -222,14 +222,11 @@ function App() {
     [war, findScoreSum, gameOver]
   );
 
-  
-
-
   const awardToPlayerTwo = useCallback(
     (card1, card2, warPile1, warPile2) => {
       if (war === WAR_STATES.END || gameOver) return;
 
-      let sum = findScoreSum(card1, card2, warPile1, warPile2)
+      let sum = findScoreSum(card1, card2, warPile1, warPile2);
 
       setPlayerTwoScore((prev) => prev + sum);
       setPlayerTwo((prev) => ({
@@ -281,14 +278,19 @@ function App() {
       if (!result) return;
 
       const playSummary = `P1: ${card1.rank}${card1.suit} vs. P2: ${card2.rank}${card2.suit}`;
-      const score = `${findScoreSum(card1, card2, playerOne.warPile, playerTwo.warPile)}`
+      const score = `${findScoreSum(
+        card1,
+        card2,
+        playerOne.warPile,
+        playerTwo.warPile
+      )}`;
 
       if (result === "playerOne") {
-        console.log(score)
+        console.log(score);
         logEvent(`${playSummary} -> Player One Wins! Earned ${score} Points!`);
         awardToPlayerOne(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else if (result === "playerTwo") {
-        console.log(score)
+        console.log(score);
         logEvent(`${playSummary} -> Player Two Wins! Earned ${score} Points!`);
         awardToPlayerTwo(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else {
@@ -317,6 +319,7 @@ function App() {
       playerOne.warPile,
       playerTwo.warPile,
       getWinner,
+      findScoreSum,
     ]
   );
 
@@ -652,7 +655,16 @@ function App() {
         ))}
       </div>
       <div className="mode-toggle-container">
-        <span>Mode:</span>
+        {/* <span>Mode:</span> */}
+        <span className="icon">
+            {mode === "dark" ? (
+              //moon
+              <MoonIcon className="moon-icon"/>
+            ) : (
+              //sun
+              <SunIcon className="sun-icon" />
+            )}
+          </span>
         <label className="mode-toggle">
           <input
             type="checkbox"
@@ -660,6 +672,7 @@ function App() {
             onChange={() => setMode(mode === "dark" ? "light" : "dark")}
           />
           <span className="slider" />
+          
         </label>
       </div>
 
@@ -670,7 +683,7 @@ function App() {
         <div>Player Two Victories: {playerTwoVictories}</div>
       </div>
 
-      <div className="players-info" style={{ border: "solid black" }}>
+      <div className="players-info" >
         {/* Player one info */}
         <div className="player-info">
           <h3>Player One</h3>
