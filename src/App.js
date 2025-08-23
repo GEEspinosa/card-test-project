@@ -165,8 +165,8 @@ function App() {
 
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
-    setPlayerOneScore(0);
-    setPlayerTwoScore(0);
+    // setPlayerOneScore(0);
+    // setPlayerTwoScore(0);
     setMessage("...waiting for card draw");
     setWar(WAR_STATES.NONE);
     setLog([]);
@@ -678,8 +678,14 @@ function App() {
       <h2 className="message">{message}</h2>
 
       <div className="scoreboard">
-        <div>Player One Victories: {playerOneVictories}</div>
-        <div>Player Two Victories: {playerTwoVictories}</div>
+        <div className="scoreboard-player-one">
+          <div>Player One Victories: {playerOneVictories}</div>
+          <div>Player One Score: {playerOneScore}</div>
+        </div>
+        <div className="scoreboard-player-two">
+          <div>Player Two Victories: {playerTwoVictories}</div>
+          <div>Player Two Score: {playerTwoScore}</div>
+        </div>
       </div>
 
       <div className="players-info">
@@ -688,7 +694,7 @@ function App() {
           <h3>Player One</h3>
           {selected1.suit === "draw" ? (
             <div className="card">
-              {selected1.suit} {selected1.rank} 
+              {selected1.suit} {selected1.rank}
             </div>
           ) : (
             <div className="card">
@@ -703,7 +709,7 @@ function App() {
             <button onClick={() => refreshDeck("playerOne")}>Fresh Deck</button>
           )}
           <div className="stats">
-            <p>Score: {playerOneScore}</p>
+            {/* <p>Score: {playerOneScore}</p> */}
             <p>Deck: {playerOne.deck.length}</p>
             <p>Reserve: {playerOne.reserve.length}</p>
             <p>War Pile: {playerOne.warPile.length}</p>
@@ -715,7 +721,7 @@ function App() {
           <h3>Player Two</h3>
           {selected2.suit === "draw" ? (
             <div className="card">
-              {selected2.suit} {selected2.rank} 
+              {selected2.suit} {selected2.rank}
             </div>
           ) : (
             <div className="card">
@@ -730,7 +736,7 @@ function App() {
             <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck</button>
           )}
           <div className="stats">
-            <p>Score: {playerTwoScore}</p>
+            {/* <p>Score: {playerTwoScore}</p> */}
             <p>Deck: {playerTwo.deck.length}</p>
             <p>Reserve: {playerTwo.reserve.length}</p>
             <p>War Pile: {playerTwo.warPile.length}</p>
