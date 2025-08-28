@@ -8,10 +8,13 @@ class Card {
     this.suit = suit;
     this.rank = rank;
   }
+
+  toString() {
+    return `${this.rank}${this.suit}`
+  }
 }
 
 const themes = ["classic", "retro", "neon"];
-const mode = "light" | "dark";
 
 const WAR_STATES = {
   NONE: "none",
@@ -324,9 +327,10 @@ function App() {
 
   function hasNoCards(player) {
     return (
-      player.deck.length === 0 &&
-      player.reserve.length === 0 &&
-      player.warPile.length === 0
+      [player.deck, player.reserve, player.warPile].every(arr => arr.length === 0)
+      // player.deck.length === 0 &&
+      // player.reserve.length === 0 &&
+      // player.warPile.length === 0
     );
   }
 
@@ -682,7 +686,7 @@ function App() {
         <label className="mode-toggle">
           <input
             type="checkbox"
-            check={mode === "dark"}
+            checked={mode === "dark"}
             onChange={() => setMode(mode === "dark" ? "light" : "dark")}
           />
           <span className="slider" />
