@@ -10,7 +10,7 @@ class Card {
   }
 
   toString() {
-    return `${this.rank}${this.suit}`
+    return `${this.rank}${this.suit}`;
   }
 }
 
@@ -53,14 +53,6 @@ function App() {
   useEffect(() => {
     document.documentElement.className = `${theme} ${mode}`;
   }, [theme, mode]);
-
-  useEffect(() => {
-    console.log("Player One Victories changed:", playerOneVictories);
-  }, [playerOneVictories]);
-
-  useEffect(() => {
-    console.log("Player Two Victories changed:", playerTwoVictories);
-  }, [playerTwoVictories]);
 
   const logEndRef = useRef(null);
 
@@ -288,11 +280,9 @@ function App() {
       )}`;
 
       if (result === "playerOne") {
-        console.log(score);
         logEvent(`${playSummary} -> Player One Wins! Earned ${score} Points!`);
         awardToPlayerOne(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else if (result === "playerTwo") {
-        console.log(score);
         logEvent(`${playSummary} -> Player Two Wins! Earned ${score} Points!`);
         awardToPlayerTwo(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else {
@@ -326,11 +316,8 @@ function App() {
   );
 
   function hasNoCards(player) {
-    return (
-      [player.deck, player.reserve, player.warPile].every(arr => arr.length === 0)
-      // player.deck.length === 0 &&
-      // player.reserve.length === 0 &&
-      // player.warPile.length === 0
+    return [player.deck, player.reserve, player.warPile].every(
+      (arr) => arr.length === 0
     );
   }
 
@@ -343,59 +330,20 @@ function App() {
     const p2HasNoCards = hasNoCards(playerTwo);
 
     if (p1HasNoCards || p2HasNoCards) {
-    if (p1HasNoCards && p2HasNoCards) {
-      setMessage("It's a tie!");
-    } else if (p1HasNoCards) {
-      setPlayerTwoVictories((prev) => prev + 1);
-      setMessage("Player One has no cards left. Player Two wins!");
-    } else {
-      setPlayerOneVictories((prev) => prev + 1);
-      setMessage("Player Two has no cards left. Player One wins!");
+      if (p1HasNoCards && p2HasNoCards) {
+        setMessage("It's a tie!");
+      } else if (p1HasNoCards) {
+        setPlayerTwoVictories((prev) => prev + 1);
+        setMessage("Player One has no cards left. Player Two wins!");
+      } else {
+        setPlayerOneVictories((prev) => prev + 1);
+        setMessage("Player Two has no cards left. Player One wins!");
+      }
+
+      setWar(WAR_STATES.END);
+      setGameOver(true);
+      return;
     }
-
-    setWar(WAR_STATES.END);
-    setGameOver(true);
-    return;}
-
-    // // Basic check: no cards at all
-    // if (p1HasNoCards || p2HasNoCards) {
-    //   const winner = p2HasNoCards ? "Player One" : "Player Two";
-    //   if (winner === "Player One") {
-    //     setPlayerOneVictories((prev) => prev + 1);
-    //   } else {
-    //     setPlayerTwoVictories((prev) => prev + 1);
-    //   }
-    //   setMessage(`${winner} wins the game!`);
-    //   setWar(WAR_STATES.END);
-    //   setGameOver(true);
-    //   return;
-    // }
-
-    // // Edge case: player has war pile cards but cannot continue war (no deck or reserve cards)
-    // const p1CanContinueWar = !(
-    //   playerOne.warPile.length > 0 &&
-    //   playerOne.deck.length + playerOne.reserve.length === 0
-    // );
-    // const p2CanContinueWar = !(
-    //   playerTwo.warPile.length > 0 &&
-    //   playerTwo.deck.length + playerTwo.reserve.length === 0
-    // );
-
-    // if (!p1CanContinueWar) {
-    //   setPlayerTwoVictories((prev) => prev + 1);
-    //   setMessage("Player One cannot continue war. Player Two wins!");
-    //   setWar(WAR_STATES.END);
-    //   setGameOver(true);
-    //   return;
-    // }
-
-    // if (!p2CanContinueWar) {
-    //   setPlayerOneVictories((prev) => prev + 1);
-    //   setMessage("Player Two cannot continue war. Player One wins!");
-    //   setWar(WAR_STATES.END);
-    //   setGameOver(true);
-    //   return;
-    // }
   }, [playerOne, playerTwo, start, gameOver]);
 
   useEffect(() => {
@@ -587,8 +535,6 @@ function App() {
 
   useEffect(() => {
     function handleKeyDown(event) {
-      console.log(event.code);
-
       const hasGameStarted =
         playerOne.deck.length > 0 && playerTwo.deck.length > 0;
 
@@ -658,6 +604,23 @@ function App() {
     }
   }, [log]);
 
+  //nested component - move into new file
+  function CardDisplay({ card }) {
+    return card.suit === "draw" ? (
+      <div className="card">
+        {selected1.suit} {selected1.rank}
+      </div>
+    ) : (
+      <div className="card">
+        <div className="card-rank top-left">{selected1.rank}</div>
+        <div className="card-rank bottom-right">{selected1.rank}</div>
+        <div className="card-suit-container">
+          <div className="card-suit">{selected1.suit}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <h1 className="title">Attrition: The Super War Card Game!</h1>
@@ -710,19 +673,7 @@ function App() {
         {/* Player one info */}
         <div className="player-info">
           <h3>Player One</h3>
-          {selected1.suit === "draw" ? (
-            <div className="card">
-              {selected1.suit} {selected1.rank}
-            </div>
-          ) : (
-            <div className="card">
-              <div className="card-rank top-left">{selected1.rank}</div>
-              <div className="card-rank bottom-right">{selected1.rank}</div>
-              <div className="card-suit-container">
-                <div className="card-suit">{selected1.suit}</div>
-              </div>
-            </div>
-          )}
+          <CardDisplay card = {selected1}/>
           {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
             <button onClick={() => refreshDeck("playerOne")}>Fresh Deck</button>
           )}
@@ -737,19 +688,7 @@ function App() {
         {/* Player two info */}
         <div className="player-info">
           <h3>Player Two</h3>
-          {selected2.suit === "draw" ? (
-            <div className="card">
-              {selected2.suit} {selected2.rank}
-            </div>
-          ) : (
-            <div className="card">
-              <div className="card-rank top-left">{selected2.rank}</div>
-              <div className="card-rank bottom-right">{selected2.rank}</div>
-              <div className="card-suit-container">
-                <div className="card-suit">{selected2.suit}</div>
-              </div>
-            </div>
-          )}
+          <CardDisplay card = {selected2}/>
           {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
             <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck</button>
           )}
