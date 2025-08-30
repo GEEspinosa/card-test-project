@@ -42,6 +42,10 @@ function App() {
   const [selected2, setSelected2] = useState({ suit: "draw", rank: "card" });
   const [playerOneScore, setPlayerOneScore] = useState(0);
   const [playerTwoScore, setPlayerTwoScore] = useState(0);
+  const [lastWarCards, setLastWarCards] = useState({
+    winner: null,
+    loser: []
+  })
   const [playerOneVictories, setPlayerOneVictories] = useState(0);
   const [playerTwoVictories, setPlayerTwoVictories] = useState(0);
   const [message, setMessage] = useState("...waiting for card draw");
@@ -280,9 +284,21 @@ function App() {
       )}`;
 
       if (result === "playerOne") {
+        if (war === WAR_STATES.FILLED) {
+          setLastWarCards({
+            winner: "Player 1",
+            loser: [...playerTwo.warPile, card2],
+          })
+        }
         logEvent(`${playSummary} -> Player One Wins! Earned ${score} Points!`);
         awardToPlayerOne(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else if (result === "playerTwo") {
+        if (war === WAR_STATES.FILLED) {
+          setLastWarCards({
+            winner: "Player 2",
+            loser: [...playerOne.warPile, card1],
+          })
+        }
         logEvent(`${playSummary} -> Player Two Wins! Earned ${score} Points!`);
         awardToPlayerTwo(card1, card2, playerOne.warPile, playerTwo.warPile);
       } else {
@@ -462,6 +478,7 @@ function App() {
   const handleContinue = useCallback(() => {
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
+    setLastWarCards({ winner: null, loser: []})
 
     const p1Empty = hasNoCards(playerOne);
     const p2Empty = hasNoCards(playerTwo);
@@ -568,7 +585,6 @@ function App() {
       }
       if (event.code === "Digit1") {
         event.preventDefault();
-
         if (playerOneNeedsRefill) {
           refreshDeck("playerOne");
         }
@@ -576,7 +592,6 @@ function App() {
 
       if (event.code === "Digit2") {
         event.preventDefault();
-
         if (playerTwoNeedsRefill) {
           refreshDeck("playerTwo");
         }
@@ -608,14 +623,14 @@ function App() {
   function CardDisplay({ card }) {
     return card.suit === "draw" ? (
       <div className="card">
-        {selected1.suit} {selected1.rank}
+        {card.suit} {card.rank}
       </div>
     ) : (
       <div className="card">
-        <div className="card-rank top-left">{selected1.rank}</div>
-        <div className="card-rank bottom-right">{selected1.rank}</div>
+        <div className="card-rank top-left">{card.rank}</div>
+        <div className="card-rank bottom-right">{card.rank}</div>
         <div className="card-suit-container">
-          <div className="card-suit">{selected1.suit}</div>
+          <div className="card-suit">{card.suit}</div>
         </div>
       </div>
     );
@@ -673,7 +688,7 @@ function App() {
         {/* Player one info */}
         <div className="player-info">
           <h3>Player One</h3>
-          <CardDisplay card = {selected1}/>
+          <CardDisplay card={selected1} />
           {start && war !== WAR_STATES.END && canRefreshDeck(playerOne) && (
             <button onClick={() => refreshDeck("playerOne")}>Fresh Deck</button>
           )}
@@ -688,7 +703,7 @@ function App() {
         {/* Player two info */}
         <div className="player-info">
           <h3>Player Two</h3>
-          <CardDisplay card = {selected2}/>
+          <CardDisplay card={selected2} />
           {start && war !== WAR_STATES.END && canRefreshDeck(playerTwo) && (
             <button onClick={() => refreshDeck("playerTwo")}>Fresh Deck</button>
           )}
@@ -724,6 +739,14 @@ function App() {
             </button>
           )
         )}
+      </div>
+      <div>
+        <h3>{lastWarCards.winner} won the war! the other player lost:</h3>
+        <div>
+          {lastWarCards.loser.map((card, idx ) => (
+            <CardDisplay key={idx} card={card}/>
+          ))}
+        </div>
       </div>
 
       <div className="log-section">
