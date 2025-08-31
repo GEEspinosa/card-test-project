@@ -243,6 +243,25 @@
   font-size: 2rem;
 }
 
+.war-display-container {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.war-display {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.small-card {
+  width: 80px;
+  height: 110px;
+  padding: 6px;
+  font-size: 1rem;
+}
+
 button {
   background-color: var(--accent);
   color: var(--text);

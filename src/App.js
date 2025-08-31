@@ -44,7 +44,8 @@ function App() {
   const [playerTwoScore, setPlayerTwoScore] = useState(0);
   const [lastWarCards, setLastWarCards] = useState({
     winner: null,
-    loser: [],
+    winnerPile: [],
+    loserPile: [],
   });
   const [playerOneVictories, setPlayerOneVictories] = useState(0);
   const [playerTwoVictories, setPlayerTwoVictories] = useState(0);
@@ -287,7 +288,8 @@ function App() {
         if (war === WAR_STATES.FILLED) {
           setLastWarCards({
             winner: "Player 1",
-            loser: [...playerTwo.warPile.slice(0, -1)],
+            winnerPile: [...playerOne.warPile, card1],
+            loserPile: [...playerTwo.warPile, card2],
           });
         }
         logEvent(`${playSummary} -> Player One Wins! Earned ${score} Points!`);
@@ -296,7 +298,8 @@ function App() {
         if (war === WAR_STATES.FILLED) {
           setLastWarCards({
             winner: "Player 2",
-            loser: [...playerOne.warPile.slice(0, -1)],
+            winnerPile: [...playerTwo.warPile, card2],
+            loserPile: [...playerOne.warPile, card1],
           });
         }
         logEvent(`${playSummary} -> Player Two Wins! Earned ${score} Points!`);
@@ -636,6 +639,26 @@ function App() {
     );
   }
 
+  function WarPileDisplay({ title, cards }) {
+    if (!cards || cards.length === 0) return null;
+    return (
+      <div className="war-display-container">
+        <h4>{title}</h4>
+        <div className="war-display">
+          {cards.map((card, idx) => (
+            <div key={idx} className="card small-card">
+              <div className="card-rank top-left">{card.rank}</div>
+              <div className="card-rank bottom-right">{card.rank}</div>
+              <div className="card-suit-container">
+                <div className="card-suit">{card.suit}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <h1 className="title">Attrition: The Super War Card Game!</h1>
@@ -740,14 +763,25 @@ function App() {
           )
         )}
       </div>
-      <div>
+      {/* <div>
         <h3>{lastWarCards.winner} won the war! the other player lost:</h3>
         <div>
-          {lastWarCards.loser.map((card, idx) => (
+          {lastWarCards.loserPile.map((card, idx) => (
             <CardDisplay key={idx} card={card} />
           ))}
         </div>
-      </div>
+      </div> */}
+
+      {lastWarCards.winner && (
+        <div>
+          <h3>{lastWarCards.winner} won the war!</h3>
+          <WarPileDisplay
+            title="Winner's Pile"
+            cards={lastWarCards.winnerPile}
+          />
+          <WarPileDisplay title="Loser's Pile" cards={lastWarCards.loserPile} />
+        </div>
+      )}
 
       <div className="log-section">
         <h3>Event Log</h3>
