@@ -54,6 +54,7 @@ function App() {
   const [logOpen, setLogOpen] = useState(true);
   const [theme, setTheme] = useState("classic");
   const [mode, setMode] = useState("dark");
+  const [warModalOpen, setWarModalOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.className = `${theme} ${mode}`;
@@ -291,6 +292,7 @@ function App() {
             winnerPile: [...playerOne.warPile, card1],
             loserPile: [...playerTwo.warPile, card2],
           });
+          setWarModalOpen(true);
         }
         logEvent(`${playSummary} -> Player One Wins! Earned ${score} Points!`);
         awardToPlayerOne(card1, card2, playerOne.warPile, playerTwo.warPile);
@@ -301,6 +303,7 @@ function App() {
             winnerPile: [...playerTwo.warPile, card2],
             loserPile: [...playerOne.warPile, card1],
           });
+          setWarModalOpen(true);
         }
         logEvent(`${playSummary} -> Player Two Wins! Earned ${score} Points!`);
         awardToPlayerTwo(card1, card2, playerOne.warPile, playerTwo.warPile);
@@ -481,7 +484,8 @@ function App() {
   const handleContinue = useCallback(() => {
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
-    setLastWarCards({ winner: null, loser: [] });
+    setLastWarCards({ winner: null, winnerPile: [], loserPile: [] });
+    setWarModalOpen(false);
 
     const p1Empty = hasNoCards(playerOne);
     const p2Empty = hasNoCards(playerTwo);
@@ -555,6 +559,12 @@ function App() {
 
   useEffect(() => {
     function handleKeyDown(event) {
+
+      if (warModalOpen) {
+        handleContinue();
+        return;
+      }
+
       const hasGameStarted =
         playerOne.deck.length > 0 && playerTwo.deck.length > 0;
 
@@ -654,6 +664,20 @@ function App() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  function WarModal({ open, onClose, data }) {
+    if (!open || !data) return null;
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3>{data.winner} wins the war!</h3>
+          <WarPileDisplay title="Winner's Pile" cards={data.winnerPile} />
+          <WarPileDisplay title="Loser's Pile" cards={data.loserPile} />
+          <button onClick={onClose}>Continue</button>
         </div>
       </div>
     );
@@ -763,6 +787,7 @@ function App() {
           )
         )}
       </div>
+
       {/* <div>
         <h3>{lastWarCards.winner} won the war! the other player lost:</h3>
         <div>
@@ -772,7 +797,7 @@ function App() {
         </div>
       </div> */}
 
-      {lastWarCards.winner && (
+      {/* {lastWarCards.winner && (
         <div>
           <h3>{lastWarCards.winner} won the war!</h3>
           <WarPileDisplay
@@ -781,7 +806,13 @@ function App() {
           />
           <WarPileDisplay title="Loser's Pile" cards={lastWarCards.loserPile} />
         </div>
-      )}
+      )} */}
+
+      <WarModal
+        open={warModalOpen}
+        data={lastWarCards}
+        onClose={handleContinue}
+      />
 
       <div className="log-section">
         <h3>Event Log</h3>
