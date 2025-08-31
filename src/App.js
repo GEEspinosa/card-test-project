@@ -44,8 +44,8 @@ function App() {
   const [playerTwoScore, setPlayerTwoScore] = useState(0);
   const [lastWarCards, setLastWarCards] = useState({
     winner: null,
-    loser: []
-  })
+    loser: [],
+  });
   const [playerOneVictories, setPlayerOneVictories] = useState(0);
   const [playerTwoVictories, setPlayerTwoVictories] = useState(0);
   const [message, setMessage] = useState("...waiting for card draw");
@@ -287,8 +287,8 @@ function App() {
         if (war === WAR_STATES.FILLED) {
           setLastWarCards({
             winner: "Player 1",
-            loser: [...playerTwo.warPile, card2],
-          })
+            loser: [...playerTwo.warPile.slice(0, -1)],
+          });
         }
         logEvent(`${playSummary} -> Player One Wins! Earned ${score} Points!`);
         awardToPlayerOne(card1, card2, playerOne.warPile, playerTwo.warPile);
@@ -296,8 +296,8 @@ function App() {
         if (war === WAR_STATES.FILLED) {
           setLastWarCards({
             winner: "Player 2",
-            loser: [...playerOne.warPile, card1],
-          })
+            loser: [...playerOne.warPile.slice(0, -1)],
+          });
         }
         logEvent(`${playSummary} -> Player Two Wins! Earned ${score} Points!`);
         awardToPlayerTwo(card1, card2, playerOne.warPile, playerTwo.warPile);
@@ -478,7 +478,7 @@ function App() {
   const handleContinue = useCallback(() => {
     setSelected1({ suit: "draw", rank: "card" });
     setSelected2({ suit: "draw", rank: "card" });
-    setLastWarCards({ winner: null, loser: []})
+    setLastWarCards({ winner: null, loser: [] });
 
     const p1Empty = hasNoCards(playerOne);
     const p2Empty = hasNoCards(playerTwo);
@@ -743,8 +743,8 @@ function App() {
       <div>
         <h3>{lastWarCards.winner} won the war! the other player lost:</h3>
         <div>
-          {lastWarCards.loser.map((card, idx ) => (
-            <CardDisplay key={idx} card={card}/>
+          {lastWarCards.loser.map((card, idx) => (
+            <CardDisplay key={idx} card={card} />
           ))}
         </div>
       </div>
