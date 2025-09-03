@@ -10,6 +10,7 @@ import {
   splitDeck,
   hasNoCards,
 } from "./utils/deckUtils";
+import {findScoreSum, prepareDeckForWar} from "./utils/gameUtils";
 import { CardDisplay } from "./components/CardDisplay";
 import { WarModal } from "./components/WarModal";
 
@@ -130,19 +131,19 @@ function App() {
     setStart(true);
   }, [resetGameState]);
 
-  const findScoreSum = useCallback((card1, card2, warPile1, warPile2) => {
-    let playedCards = RANK_VALUES[card1.rank] + RANK_VALUES[card2.rank];
-    let warPileOneSum = 0;
-    let warPileTwoSum = 0;
-    for (let i = 0; i < warPile1.length; i++) {
-      warPileOneSum += RANK_VALUES[warPile1[i].rank];
-    }
+  // const findScoreSum = useCallback((card1, card2, warPile1, warPile2) => {
+  //   let playedCards = RANK_VALUES[card1.rank] + RANK_VALUES[card2.rank];
+  //   let warPileOneSum = 0;
+  //   let warPileTwoSum = 0;
+  //   for (let i = 0; i < warPile1.length; i++) {
+  //     warPileOneSum += RANK_VALUES[warPile1[i].rank];
+  //   }
 
-    for (let i = 0; i < warPile2.length; i++) {
-      warPileTwoSum += RANK_VALUES[warPile2[i].rank];
-    }
-    return playedCards + warPileOneSum + warPileTwoSum;
-  }, []);
+  //   for (let i = 0; i < warPile2.length; i++) {
+  //     warPileTwoSum += RANK_VALUES[warPile2[i].rank];
+  //   }
+  //   return playedCards + warPileOneSum + warPileTwoSum;
+  // }, []);
 
   const awardToPlayerOne = useCallback(
     (card1, card2, warPile1, warPile2) => {
@@ -352,16 +353,16 @@ function App() {
     handleCardComparison(drawnCard1, drawnCard2);
   }, [handleCardComparison, war, playerOne.deck, playerTwo.deck, gameOver]);
 
-  const prepareDeckForWar = useCallback((deck, reserve) => {
-    if (deck.length >= 3) {
-      return { deck: [...deck], reserve: [...reserve] };
-    }
+  // const prepareDeckForWar = useCallback((deck, reserve) => {
+  //   if (deck.length >= 3) {
+  //     return { deck: [...deck], reserve: [...reserve] };
+  //   }
 
-    return {
-      deck: [...shuffleDeck(reserve), ...deck],
-      reserve: [],
-    };
-  }, []);
+  //   return {
+  //     deck: [...shuffleDeck(reserve), ...deck],
+  //     reserve: [],
+  //   };
+  // }, []);
 
   const fillWarPiles = useCallback(() => {
     const p1CanRefresh = canRefreshDeck(playerOne);
@@ -403,7 +404,7 @@ function App() {
 
     setWar(WAR_STATES.FILLED);
     setMessage("War piles filled! Draw Again to resolve war.");
-  }, [canRefreshDeck, playerOne, playerTwo, prepareDeckForWar]);
+  }, [canRefreshDeck, playerOne, playerTwo]);
 
   const refreshDeck = useCallback(
     (playerKey) => {
