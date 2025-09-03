@@ -1,18 +1,20 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import "./App.css";
-import { SUITS, RANKS, RANK_VALUES } from "./assets/card-data";
+import {RANK_VALUES } from "./assets/card-data";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
+import {buildDeck, shuffleDeck, splitDeck, hasNoCards} from "./utils/deckUtils";
 
-class Card {
-  constructor(suit, rank) {
-    this.suit = suit;
-    this.rank = rank;
-  }
 
-  toString() {
-    return `${this.rank}${this.suit}`;
-  }
-}
+// class Card {
+//   constructor(suit, rank) {
+//     this.suit = suit;
+//     this.rank = rank;
+//   }
+
+//   toString() {
+//     return `${this.rank}${this.suit}`;
+//   }
+// }
 
 const themes = ["classic", "retro", "neon"];
 
@@ -62,24 +64,24 @@ function App() {
     document.documentElement.className = `${theme} ${mode}`;
   }, [theme, mode]);
 
-  function buildDeck() {
-    let deck = [];
-    for (let suit of SUITS) {
-      for (let rank of RANKS) {
-        deck.push(new Card(suit, rank));
-      }
-    }
-    return deck;
-  }
+  // function buildDeck() {
+  //   let deck = [];
+  //   for (let suit of SUITS) {
+  //     for (let rank of RANKS) {
+  //       deck.push(new Card(suit, rank));
+  //     }
+  //   }
+  //   return deck;
+  // }
 
-  function shuffleDeck(deck) {
-    let newDeck = [...deck];
-    for (let i = newDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
-    }
-    return newDeck;
-  }
+  // function shuffleDeck(deck) {
+  //   let newDeck = [...deck];
+  //   for (let i = newDeck.length - 1; i > 0; i--) {
+  //     const j = Math.floor(Math.random() * (i + 1));
+  //     [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+  //   }
+  //   return newDeck;
+  // }
 
   const canRefreshDeck = useCallback(
     (player) => {
@@ -128,23 +130,23 @@ function App() {
     });
   }
 
-  function splitDeck(deckToSplit) {
-    const deckCopy = [...deckToSplit];
-    const p1 = [];
-    const p2 = [];
+  // function splitDeck(deckToSplit) {
+  //   const deckCopy = [...deckToSplit];
+  //   const p1 = [];
+  //   const p2 = [];
 
-    while (deckCopy.length) {
-      const card1 = deckCopy.pop();
-      const card2 = deckCopy.pop();
-      if (card1) {
-        p1.push(card1);
-      }
-      if (card2) {
-        p2.push(card2);
-      }
-    }
-    return { p1, p2 };
-  }
+  //   while (deckCopy.length) {
+  //     const card1 = deckCopy.pop();
+  //     const card2 = deckCopy.pop();
+  //     if (card1) {
+  //       p1.push(card1);
+  //     }
+  //     if (card2) {
+  //       p2.push(card2);
+  //     }
+  //   }
+  //   return { p1, p2 };
+  // }
 
   const gameOverHandled = useRef(false);
 
@@ -337,11 +339,11 @@ function App() {
     ]
   );
 
-  function hasNoCards(player) {
-    return [player.deck, player.reserve, player.warPile].every(
-      (arr) => arr.length === 0
-    );
-  }
+  // function hasNoCards(player) {
+  //   return [player.deck, player.reserve, player.warPile].every(
+  //     (arr) => arr.length === 0
+  //   );
+  // }
 
   const checkForVictory = useCallback(() => {
     if (!start || gameOver) {
