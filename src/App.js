@@ -10,7 +10,8 @@ import {
   splitDeck,
   hasNoCards,
 } from "./utils/deckUtils";
-
+import { CardDisplay } from "./components/CardDisplay";
+import { WarModal } from "./components/WarModal";
 
 function App() {
   const [start, setStart] = useState(false);
@@ -572,59 +573,6 @@ function App() {
     handleContinue,
     warModalOpen,
   ]);
-
-  //nested component - move into new file
-  function CardDisplay({ card }) {
-    return card.suit === "draw" ? (
-      <div className="card">
-        {card.suit} {card.rank}
-      </div>
-    ) : (
-      <div className="card">
-        <div className="card-rank top-left">{card.rank}</div>
-        <div className="card-rank bottom-right">{card.rank}</div>
-        <div className="card-suit-container">
-          <div className="card-suit">{card.suit}</div>
-        </div>
-      </div>
-    );
-  }
-
-  function WarPileDisplay({ title, cards }) {
-    if (!cards || cards.length === 0) return null;
-    return (
-      <div className="war-display-container">
-        <h4>{title}</h4>
-        <div className="war-display">
-          {cards.map((card, idx) => (
-            <div key={idx} className="card small-card">
-              <div className="card-rank top-left">{card.rank}</div>
-              <div className="card-rank bottom-right">{card.rank}</div>
-              <div className="card-suit-container">
-                <div className="card-suit">{card.suit}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  function WarModal({ open, onClose, data }) {
-    if (!open || !data) return null;
-    return (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h3>{data.winner} wins the war!</h3>
-          <WarPileDisplay title="Winner's Pile" cards={data.winnerPile} />
-          <WarPileDisplay title="Loser's Pile" cards={data.loserPile} />
-          <button type="button" onClick={onClose}>
-            Continue
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="app-container">
