@@ -1,4 +1,3 @@
-
 //card data arrays
 
 const SUITS = ['♠', '♣', '♥', '♦'];

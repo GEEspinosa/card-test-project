@@ -1,5 +1,5 @@
 import Card from "./Card";
-import { SUITS, RANKS } from "../assets/card-data";
+import { SUITS, RANKS } from "../constants/cardData";
 
 function buildDeck() {
   let deck = [];
