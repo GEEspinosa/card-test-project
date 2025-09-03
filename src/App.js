@@ -56,11 +56,11 @@ function App() {
   const [mode, setMode] = useState("dark");
   const [warModalOpen, setWarModalOpen] = useState(false);
 
+  
+
   useEffect(() => {
     document.documentElement.className = `${theme} ${mode}`;
   }, [theme, mode]);
-
-  const logEndRef = useRef(null);
 
   function buildDeck() {
     let deck = [];
@@ -559,7 +559,9 @@ function App() {
 
   useEffect(() => {
     function handleKeyDown(event) {
-
+      if (event.code === 'Space') {
+        event.preventDefault();
+      }
       if (warModalOpen) {
         handleContinue();
         return;
@@ -624,13 +626,9 @@ function App() {
     playerTwo.deck.length,
     playerTwo.reserve.length,
     startGame,
+    handleContinue,
+    warModalOpen,
   ]);
-
-  useEffect(() => {
-    if (logEndRef.current) {
-      logEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [log]);
 
   //nested component - move into new file
   function CardDisplay({ card }) {
@@ -677,7 +675,9 @@ function App() {
           <h3>{data.winner} wins the war!</h3>
           <WarPileDisplay title="Winner's Pile" cards={data.winnerPile} />
           <WarPileDisplay title="Loser's Pile" cards={data.loserPile} />
-          <button onClick={onClose}>Continue</button>
+          <button type="button" onClick={onClose}>
+            Continue
+          </button>
         </div>
       </div>
     );
@@ -788,26 +788,6 @@ function App() {
         )}
       </div>
 
-      {/* <div>
-        <h3>{lastWarCards.winner} won the war! the other player lost:</h3>
-        <div>
-          {lastWarCards.loserPile.map((card, idx) => (
-            <CardDisplay key={idx} card={card} />
-          ))}
-        </div>
-      </div> */}
-
-      {/* {lastWarCards.winner && (
-        <div>
-          <h3>{lastWarCards.winner} won the war!</h3>
-          <WarPileDisplay
-            title="Winner's Pile"
-            cards={lastWarCards.winnerPile}
-          />
-          <WarPileDisplay title="Loser's Pile" cards={lastWarCards.loserPile} />
-        </div>
-      )} */}
-
       <WarModal
         open={warModalOpen}
         data={lastWarCards}
@@ -830,7 +810,7 @@ function App() {
                 {log.map((entry, i) => (
                   <li key={i}>{entry}</li>
                 ))}
-                <div ref={logEndRef} />
+                <div/>
               </ul>
             </div>
           )}
