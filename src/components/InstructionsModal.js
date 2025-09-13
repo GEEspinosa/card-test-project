@@ -5,7 +5,7 @@ export default function InstructionsModal({ onClose }) {
     <div className="instruction-modal-overlay">
       <div className="instruction-modal-content">
         <h2>Game Controls</h2>
-        <ul>
+        <ul className="instruction-modal-list">
           <li>
             <strong>1</strong> = Refresh Player One's Deck
           </li>
