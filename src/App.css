@@ -89,6 +89,10 @@
   margin: 1rem 0;
 }
 
+.instruction-modal-list li {
+  margin-bottom: 0.5rem;
+}
+
 .instruction-modal-content {
   background: var(--panel);
   color: var(--text);
@@ -197,6 +201,7 @@
 }
 
 .scoreboard {
+
   display: flex;
   justify-content: center;
   gap: 40px;
@@ -442,6 +447,16 @@ button:focus-visible {
   width: 100%;
   box-sizing: border-box;
   color: var(--text);
+}
+
+.log-box::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.log-box::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
 }
 
 .log-box ul {
