@@ -57,6 +57,10 @@
   color: var(--text);
 }
 
+.app-container, .player-info, .log-box {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .help-button {
   position: fixed;
   top: 1rem;
@@ -81,13 +85,16 @@
 .instruction-modal-list {
   list-style: none;     
   padding-left: 0;       
-  text-align: left;      
+  /* text-align: left;       */
   margin: 1rem 0;
 }
 
 .instruction-modal-content {
-  background: #fff;
-  color: #000;
+  background: var(--panel);
+  color: var(--text);
+  
+  /* background: #fff;
+  color: #000; */
   padding: 1.5rem;
   border-radius: 8px;
   max-width: 400px;
