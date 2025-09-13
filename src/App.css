@@ -57,6 +57,36 @@
   color: var(--text);
 }
 
+.help-button {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Modal styles */
+.instructions-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.instructions-modal-content {
+  background: #fff;
+  color: #000;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+}
+
 .theme-selector {
   display: flex;
   gap: 1rem;

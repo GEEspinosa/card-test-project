@@ -4,6 +4,8 @@ import { RANK_VALUES } from "./constants/cardData";
 import { WAR_STATES } from "./constants/warStates";
 import { themes } from "./constants/themes";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
+import { AiOutlineQuestionCircle } from "react-icons/ai";
+import InstructionsModal from "./components/InstructionsModal";
 import {
   buildDeck,
   shuffleDeck,
@@ -45,6 +47,7 @@ function App() {
   const [theme, setTheme] = useState("classic");
   const [mode, setMode] = useState("dark");
   const [warModalOpen, setWarModalOpen] = useState(false);
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.className = `${theme} ${mode}`;
@@ -130,20 +133,6 @@ function App() {
     resetGameState();
     setStart(true);
   }, [resetGameState]);
-
-  // const findScoreSum = useCallback((card1, card2, warPile1, warPile2) => {
-  //   let playedCards = RANK_VALUES[card1.rank] + RANK_VALUES[card2.rank];
-  //   let warPileOneSum = 0;
-  //   let warPileTwoSum = 0;
-  //   for (let i = 0; i < warPile1.length; i++) {
-  //     warPileOneSum += RANK_VALUES[warPile1[i].rank];
-  //   }
-
-  //   for (let i = 0; i < warPile2.length; i++) {
-  //     warPileTwoSum += RANK_VALUES[warPile2[i].rank];
-  //   }
-  //   return playedCards + warPileOneSum + warPileTwoSum;
-  // }, []);
 
   const awardToPlayerOne = useCallback(
     (card1, card2, warPile1, warPile2) => {
@@ -352,17 +341,6 @@ function App() {
 
     handleCardComparison(drawnCard1, drawnCard2);
   }, [handleCardComparison, war, playerOne.deck, playerTwo.deck, gameOver]);
-
-  // const prepareDeckForWar = useCallback((deck, reserve) => {
-  //   if (deck.length >= 3) {
-  //     return { deck: [...deck], reserve: [...reserve] };
-  //   }
-
-  //   return {
-  //     deck: [...shuffleDeck(reserve), ...deck],
-  //     reserve: [],
-  //   };
-  // }, []);
 
   const fillWarPiles = useCallback(() => {
     const p1CanRefresh = canRefreshDeck(playerOne);
@@ -577,6 +555,16 @@ function App() {
 
   return (
     <div className="app-container">
+      <button
+        className="help-button"
+        onClick={() => setInstructionsOpen(true)}
+        aria-label="Open Instructions"
+      >
+        <AiOutlineQuestionCircle size ={28} />
+      </button>
+      {instructionsOpen && (
+        <InstructionsModal onClose={() => setInstructionsOpen(false)}/>
+      )}
       <h1 className="title">Attrition: The Super War Card Game!</h1>
       <div className="theme-selector">
         {themes.map((t) => (
