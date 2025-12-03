@@ -1,70 +1,143 @@
-# Getting Started with Create React App
+# Attrition: The Super War Card Game!
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **Attrition**, a React-based implementation of a classic war-style card game with added mechanics for war resolution, scoring, and strategic deck management. This game challenges two players to outwit each other by drawing cards, filling war piles, and managing reserves — all wrapped in a slick UI with theme and mode toggles.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+- [About](#about)  
+- [Features](#features)  
+- [Technologies Used](#technologies-used)  
+- [Getting Started](#getting-started)  
+- [How to Play](#how-to-play)  
+- [Deployment](#deployment)  
+- [Project Structure](#project-structure)  
+- [Contributing](#contributing)  
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## About
 
-### `npm test`
+Attrition is a turn-based two-player card game inspired by the classic "War" card game. Players draw cards from their decks and compete by rank, initiating "wars" when ties occur. The app tracks scores, deck states, war phases, and provides visual feedback with modals and logs.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Designed as a React single-page application, it demonstrates complex state management, custom hooks, keyboard controls, and modal interactions — all while maintaining a clean and responsive UI.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Features
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Classic "War" gameplay enhanced with multi-phase war resolution states
+- Deck shuffling, splitting, and automatic reserve management
+- Visual card display with ranks and suits
+- War pile management with interactive modals showing war outcomes
+- Scoring system with persistent victory tracking per player
+- Keyboard controls:  
+  - Space: Draw/continue  
+  - 1: Refresh Player One's deck  
+  - 2: Refresh Player Two's deck  
+- Theme selector and light/dark mode toggle
+- Event log displaying last 10 game actions
+- Instructional modal for quick reference to controls
+- Responsive design suitable for desktop and mobile
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Technologies Used
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- React (Functional Components, Hooks)  
+- JavaScript (ES6+)  
+- CSS Modules / Custom CSS  
+- Heroicons & React Icons  
+- Utility functions for deck and game logic  
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Getting Started
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Prerequisites
 
-## Learn More
+- Node.js (v14 or higher recommended)  
+- npm or yarn package manager  
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Installation
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Clone the repo  
+   ```bash
+   git clone https://github.com/your-username/attrition-war-card-game.git
+   cd attrition-war-card-game
+    ```
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
 
-### Code Splitting
+3. Run the app locally
+```bash
+npm start
+# or
+yarn start
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+4. Open http://localhost:3000 to play the game.
 
-### Analyzing the Bundle Size
+## How to Play
+- Click Start Game or press the Spacebar to begin.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Players take turns drawing cards simultaneously.
 
-### Making a Progressive Web App
+- If cards tie, a "war" is triggered requiring players to fill war piles before resolving.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- Use keys 1 or 2 to refresh Player One or Player Two’s decks when empty reserves exist.
 
-### Advanced Configuration
+- The main action button changes based on game state (Draw, Fill War Piles, Resolve War, Continue, New Game).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Monitor your score and victories on the scoreboard.
 
-### Deployment
+- Click the question mark icon or press the help button for instructions.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Deployment
+To build the app for production:
+```bash
+npm run build
+# or
+yarn build
+```
+This will create an optimized build in the build folder, ready for deployment on platforms like Netlify, Vercel, or GitHub Pages.
 
-### `npm run build` fails to minify
+## Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+src/
+├── components/
+│   ├── CardDisplay.js
+│   ├── WarModal.js
+│   ├── WarPileDisplay.js
+│   ├── InstructionsModal.js
+│   └── ...
+├── constants/
+│   ├── cardData.js
+│   ├── warStates.js
+│   └── themes.js
+├── utils/
+│   ├── deckUtils.js
+│   └── gameUtils.js
+├── App.js
+├── App.css
+└── index.js
+
+## Contributing
+Contributions, issues, and feature requests are welcome! Feel free to:
+
+- Fork the repo
+
+- Create a new branch (git checkout -b feature-name)
+
+- Commit your changes (git commit -m 'Add some feature')
+
+- Push to the branch (git push origin feature-name)
+
+- Open a Pull Request
+
+Please ensure code quality and consistency with existing style.
