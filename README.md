@@ -63,39 +63,31 @@ Designed as a React single-page application, it demonstrates complex state manag
 ### Installation
 
 1. Clone the repo  
-   ```bash
-   git clone https://github.com/your-username/attrition-war-card-game.git
+```bash
+git clone https://github.com/your-username/attrition-war-card-game.git
    cd attrition-war-card-game
-    ```
+```
 2. Install dependencies
 ```bash
 npm install
 # or
 yarn install
 ```
-
 3. Run the app locally
 ```bash
 npm start
 # or
 yarn start
-
 ```
 4. Open http://localhost:3000 to play the game.
 
 ## How to Play
 - Click Start Game or press the Spacebar to begin.
-
 - Players take turns drawing cards simultaneously.
-
 - If cards tie, a "war" is triggered requiring players to fill war piles before resolving.
-
 - Use keys 1 or 2 to refresh Player One or Player Two’s decks when empty reserves exist.
-
 - The main action button changes based on game state (Draw, Fill War Piles, Resolve War, Continue, New Game).
-
 - Monitor your score and victories on the scoreboard.
-
 - Click the question mark icon or press the help button for instructions.
 
 ## Deployment
@@ -108,7 +100,7 @@ yarn build
 This will create an optimized build in the build folder, ready for deployment on platforms like Netlify, Vercel, or GitHub Pages.
 
 ## Project Structure
-
+```bash
 src/
 ├── components/
 │   ├── CardDisplay.js
@@ -126,18 +118,13 @@ src/
 ├── App.js
 ├── App.css
 └── index.js
+```
 
 ## Contributing
 Contributions, issues, and feature requests are welcome! Feel free to:
-
 - Fork the repo
-
 - Create a new branch (git checkout -b feature-name)
-
 - Commit your changes (git commit -m 'Add some feature')
-
 - Push to the branch (git push origin feature-name)
-
 - Open a Pull Request
-
 Please ensure code quality and consistency with existing style.
