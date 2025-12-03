@@ -1,6 +1,8 @@
 # Attrition: The Super War Card Game!
 
-Welcome to **Attrition**, a React-based implementation of a classic war-style card game with added mechanics for war resolution, scoring, and strategic deck management. This game challenges two players to outwit each other by drawing cards, filling war piles, and managing reserves — all wrapped in a slick UI with theme and mode toggles.
+Welcome to **Attrition**, a React-based implementation of a classic war-style card game with added mechanics for war resolution, scoring, and strategic deck management. This game challenges two players to outwit each other by drawing cards, filling war piles, and managing reserves — all wrapped in a slick UI with theme and mode toggles. T
+
+**This is a work in progress**
 
 ---
 
