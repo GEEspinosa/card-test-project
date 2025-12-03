@@ -106,13 +106,13 @@ src/
 │   ├── CardDisplay.js
 │   ├── WarModal.js
 │   ├── WarPileDisplay.js
-│   ├── InstructionsModal.js
-│   └── ...
+│   └── InstructionsModal.js
 ├── constants/
 │   ├── cardData.js
 │   ├── warStates.js
 │   └── themes.js
 ├── utils/
+│   ├── Card.js
 │   ├── deckUtils.js
 │   └── gameUtils.js
 ├── App.js
